@@ -44,6 +44,7 @@ const MaintenanceRecordPage = () => {
 
   const [endFormData, setEndFormData] = useState({
     equipmentId: "",
+    totalHoursInput: "",
     maintenancePerformed: "",
     note: "",
   });
@@ -117,14 +118,28 @@ const MaintenanceRecordPage = () => {
 
   const handleEndMaintenance = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!endFormData.equipmentId || !endFormData.totalHoursInput || !endFormData.maintenancePerformed) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
     try {
-      await ApiService.endMaintenance(endFormData);
+      const body = {
+        equipmentId: endFormData.equipmentId,
+        totalHoursInput: parseFloat(endFormData.totalHoursInput),
+        maintenancePerformed: endFormData.maintenancePerformed,
+        note: endFormData.note,
+      };
+      await ApiService.endMaintenance(body);
       toast.success("Maintenance completed");
       setShowEndForm(false);
-      setEndFormData({ equipmentId: "", maintenancePerformed: "", note: "" });
-      // Refresh records
-      const data = await ApiService.getAllMaintenanceRecords();
-      if (data.status === 200) setRecords(data.maintenanceRecords || []);
+      setEndFormData({ equipmentId: "", totalHoursInput: "", maintenancePerformed: "", note: "" });
+      // Refresh records and equipment list
+      const [recordsData, equipmentData] = await Promise.all([
+        ApiService.getAllMaintenanceRecords(),
+        ApiService.getAllEquipment()
+      ]);
+      if (recordsData.status === 200) setRecords(recordsData.maintenanceRecords || []);
+      if (equipmentData.status === 200) setEquipmentOptions(equipmentData.equipments || []);
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to end maintenance");
     }
@@ -264,21 +279,32 @@ const MaintenanceRecordPage = () => {
                   </Select>
                 </div>
                 <div className="form-group">
+                  <label>Total Hours</label>
+                  <Input
+                    type="number"
+                    value={endFormData.totalHoursInput}
+                    onChange={(e) => setEndFormData({ ...endFormData, totalHoursInput: e.target.value })}
+                    placeholder="Enter total hours"
+                    required
+                  />
+                </div>
+                <div className="form-group">
                   <label>Maintenance Performed</label>
-                  <Textarea
+                  <Input
+                    type="text"
                     value={endFormData.maintenancePerformed}
                     onChange={(e) => setEndFormData({ ...endFormData, maintenancePerformed: e.target.value })}
                     placeholder="Describe what maintenance was performed"
-                    rows={3}
+                    required
                   />
                 </div>
                 <div className="form-group">
                   <label>Note</label>
-                  <Textarea
+                  <Input
+                    type="text"
                     value={endFormData.note}
                     onChange={(e) => setEndFormData({ ...endFormData, note: e.target.value })}
                     placeholder="Additional notes"
-                    rows={2}
                   />
                 </div>
                 <div className="flex gap-3">
