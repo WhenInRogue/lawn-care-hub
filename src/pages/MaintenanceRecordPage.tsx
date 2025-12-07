@@ -39,7 +39,7 @@ const MaintenanceRecordPage = () => {
 
   const [startFormData, setStartFormData] = useState({
     equipmentId: "",
-    description: "",
+    totalHoursInput: "",
   });
 
   const [endFormData, setEndFormData] = useState({
@@ -90,14 +90,26 @@ const MaintenanceRecordPage = () => {
 
   const handleStartMaintenance = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!startFormData.equipmentId || !startFormData.totalHoursInput) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
     try {
-      await ApiService.startMaintenance(startFormData);
+      const body = {
+        equipmentId: startFormData.equipmentId,
+        totalHoursInput: parseFloat(startFormData.totalHoursInput),
+      };
+      await ApiService.startMaintenance(body);
       toast.success("Maintenance started");
       setShowStartForm(false);
-      setStartFormData({ equipmentId: "", description: "" });
-      // Refresh records
-      const data = await ApiService.getAllMaintenanceRecords();
-      if (data.status === 200) setRecords(data.maintenanceRecords || []);
+      setStartFormData({ equipmentId: "", totalHoursInput: "" });
+      // Refresh records and equipment list
+      const [recordsData, equipmentData] = await Promise.all([
+        ApiService.getAllMaintenanceRecords(),
+        ApiService.getAllEquipment()
+      ]);
+      if (recordsData.status === 200) setRecords(recordsData.maintenanceRecords || []);
+      if (equipmentData.status === 200) setEquipmentOptions(equipmentData.equipments || []);
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to start maintenance");
     }
@@ -124,7 +136,10 @@ const MaintenanceRecordPage = () => {
     currentPage * itemsPerPage
   );
 
-  // Filter equipment that is currently under maintenance for the End Maintenance form
+  // Filter equipment by status for forms
+  const availableEquipment = equipmentOptions.filter(
+    (eq: any) => eq.equipmentStatus === "AVAILABLE"
+  );
   const maintenanceEquipment = equipmentOptions.filter(
     (eq: any) => eq.equipmentStatus === "MAINTENANCE"
   );
@@ -192,19 +207,24 @@ const MaintenanceRecordPage = () => {
                       <SelectValue placeholder="Choose equipment" />
                     </SelectTrigger>
                     <SelectContent>
-                      {equipmentOptions.map((e) => (
-                        <SelectItem key={e.equipmentId} value={String(e.equipmentId)}>{e.name}</SelectItem>
-                      ))}
+                      {availableEquipment.length === 0 ? (
+                        <SelectItem value="none" disabled>No available equipment</SelectItem>
+                      ) : (
+                        availableEquipment.map((e: any) => (
+                          <SelectItem key={e.equipmentId} value={String(e.equipmentId)}>{e.name}</SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="form-group">
-                  <label>Description</label>
-                  <Textarea
-                    value={startFormData.description}
-                    onChange={(e) => setStartFormData({ ...startFormData, description: e.target.value })}
-                    placeholder="Describe the maintenance work"
-                    rows={3}
+                  <label>Total Hours</label>
+                  <Input
+                    type="number"
+                    value={startFormData.totalHoursInput}
+                    onChange={(e) => setStartFormData({ ...startFormData, totalHoursInput: e.target.value })}
+                    placeholder="Enter total hours"
+                    required
                   />
                 </div>
                 <div className="flex gap-3">
