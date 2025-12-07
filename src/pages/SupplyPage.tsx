@@ -5,9 +5,11 @@ import ApiService from "@/services/ApiService";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2, Package, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import PaginationComponent from "@/components/common/PaginationComponent";
+import { Badge } from "@/components/ui/badge";
+
 const SupplyPage = () => {
   const [supplies, setSupplies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,43 +73,96 @@ const SupplyPage = () => {
         </div>
 
         <div className="cards-grid">
-          {paginatedSupplies.map((supply) => (
-            <Card key={supply.supplyId} className="item-card">
-              <CardContent className="p-5">
-                <h3 className="text-lg font-semibold text-foreground mb-2">{supply.name}</h3>
-                <p className="text-sm text-muted-foreground mb-1">Current Stock: {supply.currentStock}</p>
-                <p className="text-sm text-muted-foreground mb-1">Reorder Level: {supply.reorderLevel}</p>
-                <p className="text-sm text-muted-foreground mb-3">Max Quantity: {supply.maximumQuantity}</p>
-                <div className="mb-4">
-                  <Progress 
-                    value={(supply.currentStock / supply.maximumQuantity) * 100} 
-                    className={`h-2 ${supply.currentStock < supply.reorderLevel ? '[&>div]:bg-destructive' : ''}`}
-                  />
-                  <p className="text-xs text-muted-foreground mt-1 text-right">
-                    {supply.currentStock} / {supply.maximumQuantity} {supply.unitOfMeasurement}
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => navigate(`/supply/edit/${supply.supplyId}`)}
-                  >
-                    <Edit className="w-4 h-4 mr-1" />
-                    Edit
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDelete(supply.supplyId)}
-                  >
-                    <Trash2 className="w-4 h-4 mr-1" />
-                    Delete
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          {paginatedSupplies.map((supply) => {
+            const isLowStock = supply.currentStock <= supply.reorderLevel;
+            const stockPercentage = (supply.currentStock / supply.maximumQuantity) * 100;
+            
+            return (
+              <Card 
+                key={supply.supplyId} 
+                className={`item-card overflow-hidden ${isLowStock ? "ring-2 ring-destructive" : ""}`}
+              >
+                <CardContent className="p-0">
+                  {/* Header with name and stock status */}
+                  <div className="p-4 pb-3 border-b border-border">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="text-lg font-semibold text-foreground leading-tight">{supply.name}</h3>
+                      <Badge 
+                        variant={isLowStock ? "destructive" : "default"}
+                        className={!isLowStock ? "bg-accent text-accent-foreground" : ""}
+                      >
+                        {isLowStock ? "Low Stock" : "In Stock"}
+                      </Badge>
+                    </div>
+                    {isLowStock && (
+                      <div className="flex items-center gap-1.5 mt-2 text-destructive text-sm font-medium">
+                        <AlertTriangle className="w-4 h-4" />
+                        Below reorder level
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Stats */}
+                  <div className="p-4 space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <Package className="w-4 h-4 text-primary" />
+                        <div>
+                          <p className="text-muted-foreground text-xs">Current Stock</p>
+                          <p className="font-medium text-foreground">{supply.currentStock} {supply.unitOfMeasurement}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Package className="w-4 h-4 text-muted-foreground" />
+                        <div>
+                          <p className="text-muted-foreground text-xs">Max Capacity</p>
+                          <p className="font-medium text-foreground">{supply.maximumQuantity} {supply.unitOfMeasurement}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Progress bar */}
+                    <div className="pt-2 border-t border-border/50">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
+                        <span>Stock Level</span>
+                        <span>{Math.round(stockPercentage)}%</span>
+                      </div>
+                      <Progress 
+                        value={stockPercentage} 
+                        className={`h-2 ${isLowStock ? '[&>div]:bg-destructive' : ''}`}
+                      />
+                      <div className="flex items-center justify-between text-xs mt-1.5">
+                        <span className="text-muted-foreground">Reorder at: {supply.reorderLevel}</span>
+                        <span className="font-medium text-foreground">{supply.currentStock}/{supply.maximumQuantity}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-2 p-4 pt-0">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => navigate(`/supply/edit/${supply.supplyId}`)}
+                    >
+                      <Edit className="w-4 h-4 mr-1" />
+                      Edit
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => handleDelete(supply.supplyId)}
+                    >
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      Delete
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         {supplies.length === 0 && (
