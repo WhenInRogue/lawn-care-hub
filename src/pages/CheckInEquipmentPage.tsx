@@ -12,7 +12,7 @@ const CheckInEquipmentPage = () => {
   const [equipmentList, setEquipmentList] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     equipmentId: "",
-    hoursUsed: "",
+    totalHoursInput: "",
     description: "",
   });
   const [loading, setLoading] = useState(false);
@@ -44,7 +44,7 @@ const CheckInEquipmentPage = () => {
     try {
       const response = await ApiService.checkInEquipment({ 
         equipmentId: formData.equipmentId, 
-        hoursUsed: Number(formData.hoursUsed) || 0,
+        totalHoursInput: parseFloat(formData.totalHoursInput) || 0,
         description: formData.description 
       });
       if (response.status === 200) {
@@ -94,13 +94,13 @@ const CheckInEquipmentPage = () => {
             </Select>
           </div>
           <div className="form-group">
-            <label>Hours Used</label>
+            <label>Total Hours</label>
             <Input
               type="number"
               step="0.5"
-              value={formData.hoursUsed}
-              onChange={(e) => setFormData({ ...formData, hoursUsed: e.target.value })}
-              placeholder="Enter hours used"
+              value={formData.totalHoursInput}
+              onChange={(e) => setFormData({ ...formData, totalHoursInput: e.target.value })}
+              placeholder="Enter total hours"
               min="0"
               required
             />
