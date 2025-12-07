@@ -37,7 +37,7 @@ const DashboardPage = () => {
     }
     transactions.forEach((t: any) => {
       const date = new Date(t.createdAt);
-      const matchesType = type === "all" || t.transactionType === type;
+      const matchesType = type === "all" || t.supplyTransactionType === type;
       if (date.getMonth() + 1 === month && date.getFullYear() === year && matchesType) {
         const day = date.getDate();
         dailyData[day].count += 1;
