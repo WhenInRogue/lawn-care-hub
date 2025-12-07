@@ -96,15 +96,7 @@ const SupplyTransactionsPage = () => {
             <tbody>
               {transactions.map((transaction) => (
                 <tr key={transaction.supplyTransactionId}>
-                  <td>
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      transaction.supplyTransactionType === "CHECK_IN" 
-                        ? "bg-green-100 text-green-700" 
-                        : "bg-red-100 text-red-700"
-                    }`}>
-                      {transaction.supplyTransactionType === "CHECK_IN" ? "Check In" : "Check Out"}
-                    </span>
-                  </td>
+                  <td>{transaction.supplyTransactionType}</td>
                   <td>{transaction.quantity}</td>
                   <td>{formatDate(transaction.createdAt)}</td>
                   <td>{transaction.note || "-"}</td>
