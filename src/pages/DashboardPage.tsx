@@ -12,24 +12,40 @@ const DashboardPage = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedData, setSelectedData] = useState("count");
   const [transactionType, setTransactionType] = useState("all");
+  const [selectedSupply, setSelectedSupply] = useState("all");
+  const [supplies, setSupplies] = useState<any[]>([]);
   const [supplyTransactionData, setSupplyTransactionData] = useState<any[]>([]);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchSupplies = async () => {
+      try {
+        const response = await ApiService.getAllSupplies();
+        if (response.status === 200) {
+          setSupplies(response.supplies || []);
+        }
+      } catch (error: any) {
+        console.error("Failed to fetch supplies");
+      }
+    };
+    fetchSupplies();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await ApiService.getAllSupplyTransactions();
         if (response.status === 200) {
-          setSupplyTransactionData(transformData(response.supplyTransactions, selectedMonth, selectedYear, transactionType));
+          setSupplyTransactionData(transformData(response.supplyTransactions, selectedMonth, selectedYear, transactionType, selectedSupply));
         }
       } catch (error: any) {
         toast({ title: "Error", description: "Failed to fetch transactions", variant: "destructive" });
       }
     };
     fetchData();
-  }, [selectedMonth, selectedYear, transactionType]);
+  }, [selectedMonth, selectedYear, transactionType, selectedSupply]);
 
-  const transformData = (transactions: any[], month: number, year: number, type: string) => {
+  const transformData = (transactions: any[], month: number, year: number, type: string, supplyId: string) => {
     const daysInMonth = new Date(year, month, 0).getDate();
     const dailyData: Record<number, { day: number; count: number; quantity: number }> = {};
     for (let day = 1; day <= daysInMonth; day++) {
@@ -38,7 +54,8 @@ const DashboardPage = () => {
     transactions.forEach((t: any) => {
       const date = new Date(t.createdAt);
       const matchesType = type === "all" || t.supplyTransactionType === type;
-      if (date.getMonth() + 1 === month && date.getFullYear() === year && matchesType) {
+      const matchesSupply = supplyId === "all" || String(t.supplyId) === supplyId;
+      if (date.getMonth() + 1 === month && date.getFullYear() === year && matchesType && matchesSupply) {
         const day = date.getDate();
         dailyData[day].count += 1;
         dailyData[day].quantity += t.quantity;
@@ -65,6 +82,15 @@ const DashboardPage = () => {
           <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-4">
             <CardTitle>Daily Supply Transactions</CardTitle>
             <div className="flex gap-4 flex-wrap">
+              <Select value={selectedSupply} onValueChange={setSelectedSupply}>
+                <SelectTrigger className="w-44"><SelectValue placeholder="All Supplies" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Supplies</SelectItem>
+                  {supplies.map((s) => (
+                    <SelectItem key={s.supplyId} value={String(s.supplyId)}>{s.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <Select value={transactionType} onValueChange={setTransactionType}>
                 <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
                 <SelectContent>
