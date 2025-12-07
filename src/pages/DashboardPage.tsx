@@ -140,7 +140,7 @@ const DashboardPage = () => {
 
         <Card className="shadow-card">
           <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-4">
-            <CardTitle>Daily Supply Transactions</CardTitle>
+            <CardTitle>Daily Supply Usage</CardTitle>
             <div className="flex gap-4 flex-wrap">
               <Select value={transactionType} onValueChange={setTransactionType}>
                 <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
