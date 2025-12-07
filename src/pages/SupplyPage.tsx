@@ -85,7 +85,7 @@ const SupplyPage = () => {
                     className={`h-2 ${supply.currentStock < supply.reorderLevel ? '[&>div]:bg-destructive' : ''}`}
                   />
                   <p className="text-xs text-muted-foreground mt-1 text-right">
-                    {supply.currentStock} / {supply.maximumQuantity}
+                    {supply.currentStock} / {supply.maximumQuantity} {supply.unitOfMeasurement}
                   </p>
                 </div>
                 <div className="flex gap-2">
