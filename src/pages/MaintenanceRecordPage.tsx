@@ -141,9 +141,9 @@ const MaintenanceRecordPage = () => {
           <h1>Maintenance Records</h1>
           <div className="flex gap-3 items-center">
             <Select
-              value={selectedEquipmentId}
+              value={selectedEquipmentId || "all"}
               onValueChange={(value) => {
-                setSelectedEquipmentId(value);
+                setSelectedEquipmentId(value === "all" ? "" : value);
                 setCurrentPage(1);
               }}
             >
@@ -151,7 +151,7 @@ const MaintenanceRecordPage = () => {
                 <SelectValue placeholder="All Equipment" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Equipment</SelectItem>
+                <SelectItem value="all">All Equipment</SelectItem>
                 {equipmentOptions.map((equipment) => (
                   <SelectItem key={equipment.equipmentId} value={String(equipment.equipmentId)}>
                     {equipment.name}
