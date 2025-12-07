@@ -124,6 +124,11 @@ const MaintenanceRecordPage = () => {
     currentPage * itemsPerPage
   );
 
+  // Filter equipment that is currently under maintenance for the End Maintenance form
+  const maintenanceEquipment = equipmentOptions.filter(
+    (eq: any) => eq.equipmentStatus === "MAINTENANCE"
+  );
+
   if (loading) {
     return (
       <Layout>
@@ -225,12 +230,16 @@ const MaintenanceRecordPage = () => {
                     onValueChange={(v) => setEndFormData({ ...endFormData, equipmentId: v })}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Choose equipment" />
+                      <SelectValue placeholder="Choose equipment under maintenance" />
                     </SelectTrigger>
                     <SelectContent>
-                      {equipmentOptions.map((e) => (
-                        <SelectItem key={e.equipmentId} value={String(e.equipmentId)}>{e.name}</SelectItem>
-                      ))}
+                      {maintenanceEquipment.length === 0 ? (
+                        <SelectItem value="none" disabled>No equipment under maintenance</SelectItem>
+                      ) : (
+                        maintenanceEquipment.map((e: any) => (
+                          <SelectItem key={e.equipmentId} value={String(e.equipmentId)}>{e.name}</SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
