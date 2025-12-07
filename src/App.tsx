@@ -14,6 +14,8 @@ import EquipmentPage from "./pages/EquipmentPage";
 import AddEditEquipmentPage from "./pages/AddEditEquipmentPage";
 import CheckInSupplyPage from "./pages/CheckInSupplyPage";
 import CheckOutSupplyPage from "./pages/CheckOutSupplyPage";
+import CheckInEquipmentPage from "./pages/CheckInEquipmentPage";
+import CheckOutEquipmentPage from "./pages/CheckOutEquipmentPage";
 import SupplyTransactionsPage from "./pages/SupplyTransactionsPage";
 import EquipmentTransactionsPage from "./pages/EquipmentTransactionsPage";
 import MaintenanceRecordPage from "./pages/MaintenanceRecordPage";
@@ -46,6 +48,8 @@ const App = () => (
           <Route path="/equipment" element={<AdminRoute element={<EquipmentPage />} />} />
           <Route path="/equipment/add" element={<AdminRoute element={<AddEditEquipmentPage />} />} />
           <Route path="/equipment/edit/:equipmentId" element={<AdminRoute element={<AddEditEquipmentPage />} />} />
+          <Route path="/checkInEquipment" element={<ProtectedRoute element={<CheckInEquipmentPage />} />} />
+          <Route path="/checkOutEquipment" element={<ProtectedRoute element={<CheckOutEquipmentPage />} />} />
           <Route path="/equipmentTransactions" element={<ProtectedRoute element={<EquipmentTransactionsPage />} />} />
           
           {/* Maintenance Routes */}
