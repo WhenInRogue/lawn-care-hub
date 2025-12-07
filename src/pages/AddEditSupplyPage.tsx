@@ -4,7 +4,6 @@ import Layout from "@/components/layout/Layout";
 import ApiService from "@/services/ApiService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 
 const AddEditSupplyPage = () => {
@@ -15,10 +14,9 @@ const AddEditSupplyPage = () => {
 
   const [formData, setFormData] = useState({
     name: "",
-    sku: "",
-    quantity: "",
-    price: "",
-    description: "",
+    unitOfMeasurement: "",
+    reorderLevel: "",
+    maximumQuantity: "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -35,10 +33,9 @@ const AddEditSupplyPage = () => {
         const supply = response.supply;
         setFormData({
           name: supply.name || "",
-          sku: supply.sku || "",
-          quantity: String(supply.quantity) || "",
-          price: String(supply.price) || "",
-          description: supply.description || "",
+          unitOfMeasurement: supply.unitOfMeasurement || "",
+          reorderLevel: String(supply.reorderLevel) || "",
+          maximumQuantity: String(supply.maximumQuantity) || "",
         });
       }
     } catch (error: any) {
@@ -46,7 +43,7 @@ const AddEditSupplyPage = () => {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -55,9 +52,10 @@ const AddEditSupplyPage = () => {
     setLoading(true);
     try {
       const data = {
-        ...formData,
-        quantity: Number(formData.quantity),
-        price: Number(formData.price),
+        name: formData.name,
+        unitOfMeasurement: formData.unitOfMeasurement,
+        reorderLevel: Number(formData.reorderLevel),
+        maximumQuantity: Number(formData.maximumQuantity),
       };
       if (isEdit) {
         await ApiService.updateSupply(supplyId!, data);
@@ -90,51 +88,47 @@ const AddEditSupplyPage = () => {
             />
           </div>
           <div className="form-group">
-            <label>SKU</label>
+            <label>Unit of Measurement</label>
             <Input
-              name="sku"
-              value={formData.sku}
+              name="unitOfMeasurement"
+              value={formData.unitOfMeasurement}
               onChange={handleChange}
-              placeholder="SKU code"
+              placeholder="e.g. gallons, bags, units"
               required
             />
           </div>
           <div className="form-group">
-            <label>Quantity</label>
+            <label>Reorder Level</label>
             <Input
-              name="quantity"
+              name="reorderLevel"
               type="number"
-              value={formData.quantity}
+              value={formData.reorderLevel}
               onChange={handleChange}
-              placeholder="Quantity"
+              placeholder="Minimum stock level"
+              min="0"
               required
             />
           </div>
           <div className="form-group">
-            <label>Price</label>
+            <label>Maximum Quantity</label>
             <Input
-              name="price"
+              name="maximumQuantity"
               type="number"
-              step="0.01"
-              value={formData.price}
+              value={formData.maximumQuantity}
               onChange={handleChange}
-              placeholder="Price"
+              placeholder="Maximum stock capacity"
+              min="1"
               required
             />
           </div>
-          <div className="form-group">
-            <label>Description</label>
-            <Textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Description"
-              rows={4}
-            />
+          <div className="button-group">
+            <Button type="button" variant="outline" onClick={() => navigate("/supply")}>
+              Cancel
+            </Button>
+            <Button type="submit" className="btn-primary" disabled={loading}>
+              {loading ? "Saving..." : isEdit ? "Update Supply" : "Add Supply"}
+            </Button>
           </div>
-          <Button type="submit" className="w-full btn-primary" disabled={loading}>
-            {loading ? "Saving..." : isEdit ? "Update Supply" : "Add Supply"}
-          </Button>
         </form>
       </div>
     </Layout>
