@@ -60,7 +60,7 @@ const CheckInSupplyPage = () => {
   return (
     <Layout>
       <div className="form-container animate-fade-in">
-        <div className="button-group mb-6">
+        <div className="button-group mb-6 flex justify-center">
           <Button onClick={() => navigate("/checkInSupply")} className="btn-primary">
             Check-In Supply
           </Button>
