@@ -4,8 +4,6 @@ import Layout from "@/components/layout/Layout";
 import ApiService from "@/services/ApiService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
 const AddEditEquipmentPage = () => {
@@ -16,10 +14,7 @@ const AddEditEquipmentPage = () => {
 
   const [formData, setFormData] = useState({
     name: "",
-    serialNumber: "",
-    status: "AVAILABLE",
-    location: "",
-    description: "",
+    maintenanceIntervalHours: "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -36,10 +31,7 @@ const AddEditEquipmentPage = () => {
         const equipment = response.equipment;
         setFormData({
           name: equipment.name || "",
-          serialNumber: equipment.serialNumber || "",
-          status: equipment.status || "AVAILABLE",
-          location: equipment.location || "",
-          description: equipment.description || "",
+          maintenanceIntervalHours: equipment.maintenanceIntervalHours?.toString() || "",
         });
       }
     } catch (error: any) {
@@ -47,7 +39,7 @@ const AddEditEquipmentPage = () => {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -55,11 +47,15 @@ const AddEditEquipmentPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
+      const data = {
+        name: formData.name,
+        maintenanceIntervalHours: Number(formData.maintenanceIntervalHours),
+      };
       if (isEdit) {
-        await ApiService.updateEquipment(equipmentId!, formData);
+        await ApiService.updateEquipment(equipmentId!, data);
         toast({ title: "Success", description: "Equipment updated successfully" });
       } else {
-        await ApiService.createEquipment(formData);
+        await ApiService.createEquipment(data);
         toast({ title: "Success", description: "Equipment created successfully" });
       }
       navigate("/equipment");
@@ -86,50 +82,25 @@ const AddEditEquipmentPage = () => {
             />
           </div>
           <div className="form-group">
-            <label>Serial Number</label>
+            <label>Maintenance Interval (Hours)</label>
             <Input
-              name="serialNumber"
-              value={formData.serialNumber}
+              name="maintenanceIntervalHours"
+              type="number"
+              value={formData.maintenanceIntervalHours}
               onChange={handleChange}
-              placeholder="Serial number"
+              placeholder="e.g. 100"
+              min="1"
               required
             />
           </div>
-          <div className="form-group">
-            <label>Status</label>
-            <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="AVAILABLE">Available</SelectItem>
-                <SelectItem value="IN_USE">In Use</SelectItem>
-                <SelectItem value="MAINTENANCE">Maintenance</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="button-group">
+            <Button type="button" variant="outline" onClick={() => navigate("/equipment")}>
+              Cancel
+            </Button>
+            <Button type="submit" className="btn-primary" disabled={loading}>
+              {loading ? "Saving..." : isEdit ? "Update Equipment" : "Add Equipment"}
+            </Button>
           </div>
-          <div className="form-group">
-            <label>Location</label>
-            <Input
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              placeholder="Location"
-            />
-          </div>
-          <div className="form-group">
-            <label>Description</label>
-            <Textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Description"
-              rows={4}
-            />
-          </div>
-          <Button type="submit" className="w-full btn-primary" disabled={loading}>
-            {loading ? "Saving..." : isEdit ? "Update Equipment" : "Add Equipment"}
-          </Button>
         </form>
       </div>
     </Layout>
