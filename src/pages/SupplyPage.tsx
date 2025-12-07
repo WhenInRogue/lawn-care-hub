@@ -4,10 +4,10 @@ import Layout from "@/components/layout/Layout";
 import ApiService from "@/services/ApiService";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import PaginationComponent from "@/components/common/PaginationComponent";
-
 const SupplyPage = () => {
   const [supplies, setSupplies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,7 +78,16 @@ const SupplyPage = () => {
                 <p className="text-sm text-muted-foreground mb-1">Unit Type: {supply.unitOfMeasurement}</p>
                 <p className="text-sm text-muted-foreground mb-1">Current Stock: {supply.currentStock}</p>
                 <p className="text-sm text-muted-foreground mb-1">Reorder Level: {supply.reorderLevel}</p>
-                <p className="text-sm text-muted-foreground mb-4">Max Quantity: {supply.maximumQuantity}</p>
+                <p className="text-sm text-muted-foreground mb-3">Max Quantity: {supply.maximumQuantity}</p>
+                <div className="mb-4">
+                  <Progress 
+                    value={(supply.currentStock / supply.maximumQuantity) * 100} 
+                    className="h-2"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1 text-right">
+                    {supply.currentStock} / {supply.maximumQuantity}
+                  </p>
+                </div>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
