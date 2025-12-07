@@ -1,28 +1,30 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import ApiService from "@/services/ApiService";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import PaginationComponent from "@/components/common/PaginationComponent";
 
-const transactionTypes = ["CHECK_IN", "CHECK_OUT"];
-
 const EquipmentTransactionsPage = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
-  const [filter, setFilter] = useState("");
+  const [equipmentTransactionFilter, setEquipmentTransactionFilter] = useState("");
+  const [valueToSearch, setValueToSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const itemsPerPage = 10;
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
     fetchTransactions();
-  }, [currentPage, filter]);
+  }, [currentPage, valueToSearch]);
 
   const fetchTransactions = async () => {
     try {
-      const response = await ApiService.getAllEquipmentTransactions(filter || undefined);
+      const response = await ApiService.getAllEquipmentTransactions(valueToSearch || undefined);
       if (response.status === 200) {
         const records = response.equipmentTransactions || [];
         setTotalPages(Math.ceil(records.length / itemsPerPage));
@@ -34,20 +36,23 @@ const EquipmentTransactionsPage = () => {
         );
       }
     } catch (error: any) {
-      toast({ title: "Error", description: "Failed to load transactions", variant: "destructive" });
+      toast({ title: "Error", description: error.response?.data?.message || "Failed to load transactions", variant: "destructive" });
     } finally {
       setLoading(false);
     }
   };
 
+  const handleSearch = () => {
+    setCurrentPage(1);
+    setValueToSearch(equipmentTransactionFilter);
+  };
+
+  const navigateToDetails = (equipmentTransactionId: string) => {
+    navigate(`/equipmentTransactions/${equipmentTransactionId}`);
+  };
+
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    return new Date(dateString).toLocaleString();
   };
 
   if (loading) {
@@ -64,27 +69,16 @@ const EquipmentTransactionsPage = () => {
     <Layout>
       <div className="space-y-6 animate-fade-in">
         <div className="page-header">
-          <h1>Equipment Usage</h1>
-          <div className="flex gap-4">
-            <Select 
-              value={filter} 
-              onValueChange={(v) => {
-                setFilter(v === "all" ? "" : v);
-                setCurrentPage(1);
-              }}
-            >
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="All" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                {transactionTypes.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type.replace("_", " ")}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <h1>Equipment Transactions</h1>
+          <div className="flex gap-2">
+            <Input
+              placeholder="Search transaction..."
+              value={equipmentTransactionFilter}
+              onChange={(e) => setEquipmentTransactionFilter(e.target.value)}
+              className="w-64"
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            />
+            <Button onClick={handleSearch}>Search</Button>
           </div>
         </div>
 
@@ -92,31 +86,29 @@ const EquipmentTransactionsPage = () => {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Equipment Name</th>
                 <th>Type</th>
-                <th>Hours Used</th>
+                <th>Total Hours</th>
                 <th>Date</th>
-                <th>User</th>
-                <th>Description</th>
+                <th>Note</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {transactions.map((transaction) => (
                 <tr key={transaction.equipmentTransactionId}>
-                  <td>{transaction.equipmentName || "N/A"}</td>
+                  <td>{transaction.equipmentTransactionType}</td>
+                  <td>{transaction.totalHoursInput}</td>
+                  <td>{formatDate(transaction.timestamp)}</td>
+                  <td>{transaction.note || "-"}</td>
                   <td>
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      transaction.transactionType === "CHECK_IN" 
-                        ? "bg-green-100 text-green-700" 
-                        : "bg-blue-100 text-blue-700"
-                    }`}>
-                      {transaction.transactionType === "CHECK_IN" ? "Check In" : "Check Out"}
-                    </span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => navigateToDetails(transaction.equipmentTransactionId)}
+                    >
+                      View Details
+                    </Button>
                   </td>
-                  <td>{transaction.hoursUsed || "-"}</td>
-                  <td>{formatDate(transaction.transactionDate)}</td>
-                  <td>{transaction.userName || "N/A"}</td>
-                  <td>{transaction.description || "-"}</td>
                 </tr>
               ))}
             </tbody>
