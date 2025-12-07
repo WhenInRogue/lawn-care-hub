@@ -13,7 +13,7 @@ const CheckInEquipmentPage = () => {
   const [formData, setFormData] = useState({
     equipmentId: "",
     totalHoursInput: "",
-    description: "",
+    note: "",
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ const CheckInEquipmentPage = () => {
       const response = await ApiService.checkInEquipment({ 
         equipmentId: formData.equipmentId, 
         totalHoursInput: parseFloat(formData.totalHoursInput) || 0,
-        description: formData.description 
+        note: formData.note 
       });
       if (response.status === 200) {
         toast({ title: "Success", description: "Equipment checked in successfully" });
@@ -106,11 +106,11 @@ const CheckInEquipmentPage = () => {
             />
           </div>
           <div className="form-group">
-            <label>Description (Optional)</label>
+            <label>Note (Optional)</label>
             <Textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Enter description or notes"
+              value={formData.note}
+              onChange={(e) => setFormData({ ...formData, note: e.target.value })}
+              placeholder="Enter note"
               rows={3}
             />
           </div>
