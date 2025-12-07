@@ -11,6 +11,7 @@ const DashboardPage = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedData, setSelectedData] = useState("count");
+  const [transactionType, setTransactionType] = useState("all");
   const [supplyTransactionData, setSupplyTransactionData] = useState<any[]>([]);
   const { toast } = useToast();
 
@@ -19,16 +20,16 @@ const DashboardPage = () => {
       try {
         const response = await ApiService.getAllSupplyTransactions();
         if (response.status === 200) {
-          setSupplyTransactionData(transformData(response.supplyTransactions, selectedMonth, selectedYear));
+          setSupplyTransactionData(transformData(response.supplyTransactions, selectedMonth, selectedYear, transactionType));
         }
       } catch (error: any) {
         toast({ title: "Error", description: "Failed to fetch transactions", variant: "destructive" });
       }
     };
     fetchData();
-  }, [selectedMonth, selectedYear]);
+  }, [selectedMonth, selectedYear, transactionType]);
 
-  const transformData = (transactions: any[], month: number, year: number) => {
+  const transformData = (transactions: any[], month: number, year: number, type: string) => {
     const daysInMonth = new Date(year, month, 0).getDate();
     const dailyData: Record<number, { day: number; count: number; quantity: number }> = {};
     for (let day = 1; day <= daysInMonth; day++) {
@@ -36,7 +37,8 @@ const DashboardPage = () => {
     }
     transactions.forEach((t: any) => {
       const date = new Date(t.createdAt);
-      if (date.getMonth() + 1 === month && date.getFullYear() === year) {
+      const matchesType = type === "all" || t.transactionType === type;
+      if (date.getMonth() + 1 === month && date.getFullYear() === year && matchesType) {
         const day = date.getDate();
         dailyData[day].count += 1;
         dailyData[day].quantity += t.quantity;
@@ -60,9 +62,17 @@ const DashboardPage = () => {
         </div>
 
         <Card className="shadow-card">
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-4">
             <CardTitle>Daily Supply Transactions</CardTitle>
-            <div className="flex gap-4">
+            <div className="flex gap-4 flex-wrap">
+              <Select value={transactionType} onValueChange={setTransactionType}>
+                <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="CHECK_IN">Check In</SelectItem>
+                  <SelectItem value="CHECK_OUT">Check Out</SelectItem>
+                </SelectContent>
+              </Select>
               <Select value={String(selectedMonth)} onValueChange={(v) => setSelectedMonth(Number(v))}>
                 <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
                 <SelectContent>{months.map((m) => <SelectItem key={m.value} value={String(m.value)}>{m.label}</SelectItem>)}</SelectContent>
