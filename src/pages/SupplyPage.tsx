@@ -82,7 +82,7 @@ const SupplyPage = () => {
                 <div className="mb-4">
                   <Progress 
                     value={(supply.currentStock / supply.maximumQuantity) * 100} 
-                    className="h-2"
+                    className={`h-2 ${supply.currentStock < supply.reorderLevel ? '[&>div]:bg-destructive' : ''}`}
                   />
                   <p className="text-xs text-muted-foreground mt-1 text-right">
                     {supply.currentStock} / {supply.maximumQuantity}
