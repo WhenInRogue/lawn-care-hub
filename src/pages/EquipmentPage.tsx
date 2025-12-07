@@ -117,12 +117,10 @@ const EquipmentPage = () => {
                       {item.equipmentStatus?.replace("_", " ")}
                     </Badge>
                   </div>
-                  {item.maintenanceDue && (
-                    <div className="flex items-center gap-1.5 mt-2 text-destructive text-sm font-medium">
-                      <AlertTriangle className="w-4 h-4" />
-                      Maintenance Due
-                    </div>
-                  )}
+                  <div className={`flex items-center gap-1.5 mt-2 text-sm font-medium ${item.maintenanceDue ? "text-destructive" : "text-accent"}`}>
+                    <AlertTriangle className="w-4 h-4" />
+                    Maintenance Due: {item.maintenanceDue ? "Yes" : "No"}
+                  </div>
                 </div>
 
                 {/* Stats Grid */}
