@@ -26,7 +26,7 @@ const DashboardPage = () => {
           ApiService.getAllEquipment()
         ]);
         if (suppliesRes.status === 200) setSupplies(suppliesRes.supplies || []);
-        if (equipmentRes.status === 200) setEquipment(equipmentRes.equipment || []);
+        if (equipmentRes.status === 200) setEquipment(equipmentRes.equipments || []);
       } catch (error) {
         console.error("Failed to fetch summary data");
       }
