@@ -1,738 +1,490 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
+@layer base {
+  :root {
+    --background: 145 20% 97%;
+    --foreground: 160 30% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 160 30% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 160 30% 15%;
+    --primary: 174 100% 29%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 160 20% 92%;
+    --secondary-foreground: 160 30% 25%;
+    --muted: 160 15% 90%;
+    --muted-foreground: 160 15% 45%;
+    --accent: 174 60% 90%;
+    --accent-foreground: 174 100% 20%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --border: 160 20% 88%;
+    --input: 160 20% 88%;
+    --ring: 174 100% 29%;
+    --radius: 0.75rem;
+    
+    --sidebar-background: 160 25% 12%;
+    --sidebar-foreground: 160 10% 90%;
+    --sidebar-primary: 174 100% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 160 20% 18%;
+    --sidebar-accent-foreground: 160 10% 90%;
+    --sidebar-border: 160 20% 20%;
+    --sidebar-ring: 174 100% 40%;
+  }
+
+  .dark {
+    --background: 160 25% 8%;
+    --foreground: 160 10% 95%;
+    --card: 160 20% 12%;
+    --card-foreground: 160 10% 95%;
+    --popover: 160 20% 12%;
+    --popover-foreground: 160 10% 95%;
+    --primary: 174 100% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 160 20% 18%;
+    --secondary-foreground: 160 10% 90%;
+    --muted: 160 15% 20%;
+    --muted-foreground: 160 10% 60%;
+    --accent: 174 40% 25%;
+    --accent-foreground: 174 100% 80%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 142 70% 40%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 90% 55%;
+    --warning-foreground: 0 0% 100%;
+    --border: 160 20% 20%;
+    --input: 160 20% 20%;
+    --ring: 174 100% 40%;
+    
+    --sidebar-background: 160 25% 6%;
+    --sidebar-foreground: 160 10% 90%;
+    --sidebar-primary: 174 100% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 160 20% 12%;
+    --sidebar-accent-foreground: 160 10% 90%;
+    --sidebar-border: 160 20% 15%;
+    --sidebar-ring: 174 100% 45%;
+  }
 }
 
-/* LOGIN AND REGISTER STYLING */
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+@layer utilities {
+  .gradient-primary {
+    background: linear-gradient(135deg, hsl(174 100% 29%) 0%, hsl(174 80% 35%) 100%);
+  }
+  
+  .shadow-elevated {
+    box-shadow: 0 10px 40px -10px hsl(174 100% 29% / 0.15), 0 4px 6px -2px hsl(0 0% 0% / 0.05);
+  }
+  
+  .shadow-card {
+    box-shadow: 0 4px 20px -4px hsl(0 0% 0% / 0.08), 0 2px 4px -2px hsl(0 0% 0% / 0.04);
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out forwards;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* AUTH PAGES */
 .auth-container {
-  width: 500px;
-  margin: 8rem auto;
-  padding: 20px;
-  border: 1px solid #eee;
-  border-radius: 5px;
-  font-size: 20px;
+  @apply w-full max-w-md mx-auto mt-24 p-8 bg-card rounded-2xl shadow-elevated border border-border;
 }
 
 .auth-container h2 {
-  text-align: center;
-  margin-bottom: 20px;
+  @apply text-2xl font-bold text-center mb-6 text-foreground;
 }
 
 .auth-container form {
-  display: flex;
-  flex-direction: column;
+  @apply flex flex-col gap-4;
 }
 
 .auth-container input {
-  margin-bottom: 10px;
-  padding: 10px;
-  font-size: 18px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  @apply w-full px-4 py-3 text-base border border-input rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200;
 }
 
-button[type="submit"] {
-  width: 100%;
-  padding: 12px;
-  background-color: #008080;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  margin: 20px auto;
-}
-
-button[type="submit"]:hover {
-  background-color: #2F4F4F;
-}
-
-.auth-container button:hover {
-  background-color: #2F4F4F;
-}
-
-.error-message {
-  color: red;
-  text-align: center;
-  margin-bottom: 10px;
+.auth-container button[type="submit"] {
+  @apply w-full py-3 mt-4 bg-primary text-primary-foreground font-semibold rounded-lg hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-lg;
 }
 
 .auth-container p {
-  text-align: center;
-  font-weight: 500;
+  @apply text-center text-muted-foreground mt-4;
 }
 
 .auth-container a {
-  color: #008080;
-  text-decoration: none;
-  font-weight: 700;
+  @apply text-primary font-semibold hover:underline;
 }
 
-.auth-container a:hover {
-  text-decoration: underline;
+.error-message {
+  @apply text-destructive text-center text-sm mb-4 p-3 bg-destructive/10 rounded-lg;
 }
 
-/* SIDEBAR STYLING */
+/* SIDEBAR */
 .sidebar {
-  width: 13%;
-  height: 100vh;
-  background: linear-gradient(135deg, #1c1e21, #3a3f44);
-  color: #f1f1f1;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 30px 0px;
-  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
-  position: fixed;
-  transition: all 0.3s ease;
+  @apply w-64 h-screen bg-sidebar text-sidebar-foreground fixed left-0 top-0 flex flex-col shadow-xl transition-all duration-300 z-50;
+}
+
+.sidebar .logo {
+  @apply px-6 py-6 border-b border-sidebar-border;
 }
 
 .ims {
-  margin-left: 20%;
-  color: #008080;
-  padding: 0;
-  margin-bottom: 0;
-  font-weight: 900;
+  @apply text-2xl font-bold text-sidebar-primary tracking-tight;
 }
 
 .nav-links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+  @apply flex flex-col gap-1 p-4 flex-1;
 }
 
 .nav-links li {
-  margin: 15px 0;
-  transition: transform 0.2s ease-in-out;
+  @apply list-none;
 }
 
 .nav-links a {
-  display: block;
-  color: #f1f1f1;
-  text-decoration: none;
-  padding: 10px 15px;
-  border-radius: 8px;
-  background: transparent;
-  transition: background 0.3s ease, color 0.3s ease;
-  font-size: 1rem;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-}
-
-.nav-links a:hover {
-  color: #008080;
+  @apply flex items-center gap-3 px-4 py-3 rounded-lg text-sidebar-foreground/80 font-medium transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-primary;
 }
 
 .nav-links a.active {
-  background: rgba(106, 17, 203, 0.3);
-  color: #008080;
-}
-
-.nav-links li:hover a {
-  background: rgba(37, 117, 252, 0.2);
+  @apply bg-sidebar-accent text-sidebar-primary font-semibold;
 }
 
 .nav-links a::before {
-  content: '→ ';
-  opacity: 0;
-  transition: opacity 0.2s ease, margin-left 0.3s ease;
+  @apply hidden;
 }
 
-.nav-links li:hover a::before {
-  opacity: 1;
-  margin-left: -10px;
-}
-
-@media (max-width: 768px) {
-  .sidebar {
-    width: 220px;
-  }
-
-  .logo {
-    font-size: 1.5rem;
-  }
-
-  .nav-links a {
-    font-size: 0.9rem;
-  }
-}
-
-/* Layout STYLING */
+/* LAYOUT */
 .layout {
-  display: flex;
-  overflow: hidden;
-  transition: all 0.3s ease-in-out;
+  @apply flex min-h-screen bg-background;
 }
 
 .main-content {
-  margin-left: 12%;
-  flex-grow: 1;
-  padding: 20px;
-  transition: margin-left 0.3s ease;
+  @apply ml-64 flex-1 p-8 transition-all duration-300;
 }
 
-/* PRODUCT PAGE STYLING */
+/* PRODUCT/ITEM PAGES */
 .product-page {
-  padding: 20px;
-  background-color: #f3f4f6;
+  @apply p-6 animate-fade-in;
 }
 
 .product-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
+  @apply flex justify-between items-center mb-8;
 }
 
 .product-header h1 {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #008080;
+  @apply text-3xl font-bold text-foreground;
 }
 
 .add-product-btn {
-  padding: 13px 20px;
-  background-color: #008080;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
-}
-
-.add-product-btn:hover {
-  background-color: #2F4F4F;
+  @apply px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-lg;
 }
 
 .product-list {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 15px;
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6;
 }
 
 .product-item {
-  background-color: white;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.product-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  @apply bg-card p-6 rounded-xl shadow-card border border-border hover:shadow-elevated hover:-translate-y-1 transition-all duration-300;
 }
 
 .product-info {
-  text-align: center;
+  @apply text-center;
 }
 
 .product-info .name {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #2F4F4F;
-  margin-bottom: 10px;
+  @apply text-lg font-bold text-foreground mb-2;
 }
 
 .product-info .sku,
 .product-info .price,
 .product-info .quantity,
 .product-info p {
-  color: #777;
-  font-size: 0.9rem;
-  margin-bottom: 5px;
+  @apply text-muted-foreground text-sm mb-1;
 }
 
 .product-actions {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-.edit-btn,
-.delete-btn {
-  padding: 8px 15px;
-  margin: 0 5px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  @apply flex justify-center gap-2 mt-4 pt-4 border-t border-border;
 }
 
 .edit-btn {
-  background-color: #008080;
-  color: white;
-}
-
-.edit-btn:hover {
-  background-color: #2F4F4F;
+  @apply px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:opacity-90 transition-all duration-200;
 }
 
 .delete-btn {
-  background-color: #dc3545;
-  color: white;
-}
-
-.delete-btn:hover {
-  background-color: #a5202e;
+  @apply px-4 py-2 bg-destructive text-destructive-foreground text-sm font-medium rounded-lg hover:opacity-90 transition-all duration-200;
 }
 
 .loading {
-  font-size: 1.2rem;
-  color: #666;
-  text-align: center;
-  margin-top: 50px;
+  @apply text-lg text-muted-foreground text-center mt-12;
 }
 
-/* Navigation buttons within check-in and check-out pages */
+/* CHECK-IN/CHECK-OUT BUTTONS */
 .checkin-equipment-btn-container {
-  max-width: 600px;
-  margin: 0 auto;
-  margin-top: 20px;
+  @apply max-w-xl mx-auto mt-6;
 }
 
 .checkin-equipment-btn-container button {
-  width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  background-color: #008080;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: 600;
+  @apply w-full py-3 text-base font-semibold bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-all duration-200;
 }
 
-.checkin-equipment-btn-container button:hover {
-  background-color: #2F4F4F;
-}
-
-/* AddEditProductPage Styling */
+/* FORM PAGES */
 .product-form-page {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #fefefe;
-  box-shadow: 0 1px 1px #008080;
-  border-radius: 10px;
+  @apply max-w-2xl mx-auto p-8 bg-card rounded-2xl shadow-elevated border border-border animate-fade-in;
 }
 
 .product-form-page h1 {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #008080;
-  text-align: center;
-  margin-bottom: 2rem;
+  @apply text-2xl font-bold text-foreground text-center mb-8;
 }
 
 .product-form-page form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  @apply flex flex-col gap-5;
 }
 
 .product-form-page .form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 15px;
+  @apply flex flex-col gap-2;
 }
 
 .product-form-page .form-group label {
-  font-size: 1rem;
-  color: #2F4F4F;
-  margin-bottom: 8px;
+  @apply text-sm font-medium text-foreground;
 }
 
 .product-form-page .form-group input,
 .product-form-page .form-group select,
 .product-form-page .form-group textarea {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 1rem;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.product-form-page .form-group input:focus,
-.product-form-page .form-group select:focus,
-.product-form-page .form-group textarea:focus {
-  border-color: #008080;
-  outline: none;
+  @apply w-full px-4 py-3 border border-input rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200;
 }
 
 .product-form-page textarea {
-  resize: vertical;
-  min-height: 100px;
+  @apply min-h-[100px] resize-y;
 }
 
 .product-form-page button {
-  padding: 12px 20px;
-  background-color: #008080;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
-  margin-top: 15px;
+  @apply py-3 mt-4 bg-primary text-primary-foreground font-semibold rounded-lg hover:opacity-90 transition-all duration-200 shadow-md;
 }
 
-.product-form-page button:hover {
-  background-color: #2F4F4F;
-}
-
-/* PURCHASE/SELL PAGE STYLING */
+/* PURCHASE/SELL FORM */
 .purchase-form-page {
-  max-width: 600px;
-  margin: 30px auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 5px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  @apply max-w-xl mx-auto my-8 p-8 bg-card rounded-2xl shadow-elevated border border-border animate-fade-in;
 }
 
 .purchase-form-page h1 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #008080;
+  @apply text-2xl font-bold text-foreground text-center mb-6;
 }
 
 .purchase-form-page .form-group {
-  margin-bottom: 15px;
+  @apply mb-4;
 }
 
 .purchase-form-page .form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-  color: #2F4F4F;
-  margin: 10px;
-  font-weight: 550;
+  @apply block mb-2 text-sm font-medium text-foreground;
 }
 
 .purchase-form-page .form-group input,
 .purchase-form-page .form-group select,
 .purchase-form-page .form-group textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-sizing: border-box;
+  @apply w-full px-4 py-3 border border-input rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200;
 }
 
 .purchase-form-page .form-group textarea {
-  resize: vertical;
-  height: 100px;
+  @apply min-h-[100px] resize-y;
 }
 
-/* TRANSACTION PAGE STYLING WITH TABLE */
+/* TRANSACTIONS TABLE */
 .transactions-page {
-  padding: 20px;
+  @apply p-6 animate-fade-in;
 }
 
 .transactions-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  @apply flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8;
 }
 
 .transactions-header h1 {
-  color: #008080;
+  @apply text-3xl font-bold text-foreground;
 }
 
 .transaction-search {
-  display: flex;
-  gap: 10px;
+  @apply flex gap-3;
 }
 
 .transaction-search input {
-  border: 1px solid #008080;
-  padding: 10px;
-  border-radius: 4px;
+  @apply px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
 }
 
 .transactions-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
+  @apply w-full border-collapse overflow-hidden rounded-xl shadow-card;
 }
 
 .transactions-table th,
 .transactions-table td {
-  border: 1px solid #ddd;
-  padding: 12px;
-  text-align: left;
+  @apply px-5 py-4 text-left border-b border-border;
 }
 
 .transactions-table th {
-  background-color: #f4f4f4;
-  font-weight: bold;
+  @apply bg-secondary font-semibold text-foreground text-sm uppercase tracking-wide;
 }
 
-.transactions-table tr:nth-child(even) {
-  background-color: #f9f9f9;
+.transactions-table td {
+  @apply bg-card text-foreground;
 }
 
-.transactions-table tr:hover {
-  background-color: #e9e9e9;
+.transactions-table tr:hover td {
+  @apply bg-accent/30;
 }
 
-/* Container for the Transaction page */
+/* TRANSACTION DETAILS */
 .transaction-details-page {
-  padding: 30px;
-  max-width: 1200px;
-  margin: 0 auto;
-  background-color: #f1f5f9;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  @apply max-w-4xl mx-auto p-8 bg-card rounded-2xl shadow-elevated border border-border animate-fade-in;
 }
 
-/* Section card styles */
 .section-card {
-  background-color: #ffffff;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 25px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease;
-}
-
-.section-card:hover {
-  transform: translateY(-5px);
+  @apply bg-secondary/30 rounded-xl p-6 mb-6 border border-border/50;
 }
 
 .section-card h2 {
-  margin-bottom: 15px;
-  font-size: 1.8em;
-  color: #374151;
-  border-bottom: 2px solid #e5e7eb;
-  padding-bottom: 10px;
+  @apply text-xl font-bold text-foreground mb-4 pb-3 border-b border-border;
 }
 
 .section-card p {
-  margin: 10px 0;
-  font-size: 1rem;
-  color: #4b5563;
-  line-height: 1.6;
+  @apply text-muted-foreground leading-relaxed;
 }
 
-/* PAGINATION STYLING */
+/* PAGINATION */
 .pagination-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
+  @apply flex justify-center items-center gap-2 mt-8;
 }
 
 .pagination-button {
-  background-color: #555;
-  padding: 10px 15px;
-  margin: 0 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  color: white;
-  border: none;
-  border-radius: 4px;
-}
-
-.pagination-button:hover {
-  background-color: #2F4F4F;
+  @apply px-4 py-2 bg-secondary text-secondary-foreground font-medium rounded-lg hover:bg-primary hover:text-primary-foreground transition-all duration-200;
 }
 
 .pagination-button.active {
-  background-color: #008080;
-  color: white;
-  font-weight: bold;
+  @apply bg-primary text-primary-foreground;
 }
 
 .pagination-button:disabled {
-  background-color: #d3d3d3;
-  cursor: not-allowed;
+  @apply bg-muted text-muted-foreground cursor-not-allowed hover:bg-muted hover:text-muted-foreground;
 }
 
-/* PROFILE PAGE STYLING */
+/* PROFILE PAGE */
 .profile-page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  padding: 20px;
+  @apply flex justify-center items-center min-h-[80vh] p-6;
 }
 
 .profile-card {
-  background: linear-gradient(145deg, #f3f4f6, #ffffff);
-  border-radius: 15px;
-  box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.1), -10px -10px 20px rgba(255, 255, 255, 0.5);
-  padding: 40px;
-  width: 60%;
-  text-align: center;
-  transition: transform 0.3s ease-in-out;
-}
-
-.profile-card:hover {
-  transform: scale(1.05);
-  box-shadow: 10px 20px 40px rgba(0, 0, 0, 0.15);
+  @apply bg-card rounded-2xl shadow-elevated border border-border p-8 w-full max-w-lg text-center animate-slide-up;
 }
 
 .profile-card h1 {
-  font-size: 2.5rem;
-  color: #008080;
-  margin-bottom: 100px;
-  animation: fadeIn 1s ease-in-out;
-  text-transform: capitalize;
+  @apply text-3xl font-bold text-foreground mb-8;
 }
 
 .profile-info {
-  padding: 20px;
-  background: #f9f9f9;
-  border-radius: 10px;
-  box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.05);
+  @apply bg-secondary/50 rounded-xl p-6;
 }
 
 .profile-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  font-size: 20px;
-  color: #444;
-  border-bottom: 1px solid #eee;
-  transition: color 0.2s;
+  @apply flex justify-between items-center py-4 border-b border-border last:border-b-0;
 }
 
 .profile-item label {
-  font-weight: bold;
-  color: #008080;
+  @apply font-semibold text-primary;
 }
 
 .profile-item span {
-  color: #333;
+  @apply text-foreground;
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* DASHBOARD */
+.dashboard-page {
+  @apply p-6 animate-fade-in;
 }
 
-/* DASHBOARD STYLING */
 .filter-section {
-  display: flex;
-  gap: 8px;
-  align-items: center;
+  @apply flex gap-3 items-center;
 }
 
 #month-select,
 #year-select {
-  padding: 8px;
-  font-size: 14px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+  @apply px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
 }
 
 .chart-container {
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  height: 500px;
-  background: white;
-}
-
-.dashboard-page {
-  padding: 20px;
+  @apply p-6 bg-card rounded-2xl shadow-card border border-border h-[500px];
 }
 
 .button-group {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 30px;
-  gap: 20px;
+  @apply flex justify-center gap-4 mb-8;
 }
 
 .button-group button {
-  padding: 10px 15px;
-  cursor: pointer;
-  background-color: #008080;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  font-weight: 500;
-  transition: background-color 0.3s;
-}
-
-.button-group button:hover {
-  background-color: #2F4F4F;
+  @apply px-5 py-2.5 bg-secondary text-secondary-foreground font-medium rounded-lg hover:bg-primary hover:text-primary-foreground transition-all duration-200;
 }
 
 .button-group button.active {
-  background-color: #2F4F4F;
+  @apply bg-primary text-primary-foreground;
 }
 
 .message {
-  background-color: #d4edda;
-  color: #155724;
-  padding: 10px;
-  border-radius: 5px;
-  text-align: center;
-  margin-bottom: 30px;
+  @apply bg-success/10 text-success p-4 rounded-xl text-center mb-8 font-medium;
 }
 
-/* General button styles */
+/* GENERAL BUTTON STYLES */
 button {
-  padding: 10px 15px;
-  font-size: 14px;
-  background-color: #008080;
-  color: #ffffff;
-  font-weight: 800;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  @apply px-4 py-2.5 text-sm font-semibold bg-primary text-primary-foreground rounded-lg cursor-pointer transition-all duration-200 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed;
 }
 
-button:hover {
-  background-color: #2F4F4F;
-}
-
-/* Responsive adjustments */
-@media (max-width: 1200px) {
-  .product-list {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
+/* RESPONSIVE */
 @media (max-width: 768px) {
-  .product-list {
-    grid-template-columns: repeat(2, 1fr);
+  .sidebar {
+    @apply w-56;
   }
   
   .main-content {
-    margin-left: 220px;
+    @apply ml-56;
   }
   
   .profile-card {
-    width: 90%;
+    @apply w-full;
   }
 }
 
-@media (max-width: 480px) {
-  .product-list {
-    grid-template-columns: 1fr;
+@media (max-width: 640px) {
+  .sidebar {
+    @apply -translate-x-full;
+  }
+  
+  .main-content {
+    @apply ml-0;
   }
 }
