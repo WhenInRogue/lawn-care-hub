@@ -5,9 +5,10 @@ import ApiService from "@/services/ApiService";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2, Clock, Wrench, User, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import PaginationComponent from "@/components/common/PaginationComponent";
+import { Badge } from "@/components/ui/badge";
 
 const equipmentStatusOptions = ["AVAILABLE", "IN_USE", "MAINTENANCE"];
 
@@ -102,22 +103,66 @@ const EquipmentPage = () => {
           {equipment.map((item) => (
             <Card 
               key={item.equipmentId} 
-              className={`item-card ${item.maintenanceDue ? "border-destructive border-2" : ""}`}
+              className={`item-card overflow-hidden ${item.maintenanceDue ? "ring-2 ring-destructive" : ""}`}
             >
-              <CardContent className="p-5">
-                <h3 className="text-lg font-semibold text-foreground mb-2">{item.name}</h3>
-                <p className="text-sm text-muted-foreground mb-1">Total Hours: {item.totalHours}</p>
-                <p className="text-sm text-muted-foreground mb-1">Maintenance Interval: {item.maintenanceIntervalHours}</p>
-                <p className="text-sm text-muted-foreground mb-1">Status: {item.equipmentStatus}</p>
-                <p className="text-sm text-muted-foreground mb-1">
-                  Maintenance Due: <span className={item.maintenanceDue ? "text-destructive font-semibold" : ""}>{item.maintenanceDue ? "Yes" : "No"}</span>
-                </p>
-                <p className="text-sm text-muted-foreground mb-1">Next Maintenance At: {item.nextMaintenanceDueHours}</p>
-                <p className="text-sm text-muted-foreground mb-4">Last Checked Out By: {item.lastCheckedOutBy || "N/A"}</p>
-                <div className="flex gap-2">
+              <CardContent className="p-0">
+                {/* Header with name and status */}
+                <div className="p-4 pb-3 border-b border-border">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="text-lg font-semibold text-foreground leading-tight">{item.name}</h3>
+                    <Badge 
+                      variant={item.equipmentStatus === "AVAILABLE" ? "default" : item.equipmentStatus === "MAINTENANCE" ? "secondary" : "outline"}
+                      className={item.equipmentStatus === "AVAILABLE" ? "bg-accent text-accent-foreground" : ""}
+                    >
+                      {item.equipmentStatus?.replace("_", " ")}
+                    </Badge>
+                  </div>
+                  {item.maintenanceDue && (
+                    <div className="flex items-center gap-1.5 mt-2 text-destructive text-sm font-medium">
+                      <AlertTriangle className="w-4 h-4" />
+                      Maintenance Due
+                    </div>
+                  )}
+                </div>
+
+                {/* Stats Grid */}
+                <div className="p-4 space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Clock className="w-4 h-4 text-primary" />
+                      <div>
+                        <p className="text-muted-foreground text-xs">Total Hours</p>
+                        <p className="font-medium text-foreground">{item.totalHours}h</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Wrench className="w-4 h-4 text-primary" />
+                      <div>
+                        <p className="text-muted-foreground text-xs">Maint. Interval</p>
+                        <p className="font-medium text-foreground">{item.maintenanceIntervalHours}h</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="pt-2 border-t border-border/50 space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Next Maintenance</span>
+                      <span className="font-medium text-foreground">{item.nextMaintenanceDueHours}h</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <User className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">Last Checked Out:</span>
+                      <span className="font-medium text-foreground truncate">{item.lastCheckedOutBy || "N/A"}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 p-4 pt-0">
                   <Button
                     variant="outline"
                     size="sm"
+                    className="flex-1"
                     onClick={() => navigate(`/equipment/edit/${item.equipmentId}`)}
                   >
                     <Edit className="w-4 h-4 mr-1" />
@@ -126,6 +171,7 @@ const EquipmentPage = () => {
                   <Button
                     variant="destructive"
                     size="sm"
+                    className="flex-1"
                     onClick={() => handleDelete(item.equipmentId)}
                   >
                     <Trash2 className="w-4 h-4 mr-1" />
