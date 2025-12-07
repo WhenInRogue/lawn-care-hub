@@ -87,7 +87,7 @@ const CheckOutSupplyPage = () => {
               </SelectTrigger>
               <SelectContent>
                 {supplies.map((supply) => (
-                  <SelectItem key={supply.supplyId} value={supply.supplyId}>
+                  <SelectItem key={supply.supplyId} value={String(supply.supplyId)}>
                     {supply.name} (Available: {supply.currentStock})
                   </SelectItem>
                 ))}

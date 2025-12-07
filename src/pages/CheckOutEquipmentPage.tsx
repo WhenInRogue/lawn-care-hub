@@ -84,7 +84,7 @@ const CheckOutEquipmentPage = () => {
               </SelectTrigger>
               <SelectContent>
                 {equipmentList.map((eq) => (
-                  <SelectItem key={eq.equipmentId} value={eq.equipmentId}>
+                  <SelectItem key={eq.equipmentId} value={String(eq.equipmentId)}>
                     {eq.name}
                   </SelectItem>
                 ))}
