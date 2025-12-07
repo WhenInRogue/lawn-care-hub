@@ -1,48 +1,43 @@
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
 }
 
-const PaginationComponent = ({ currentPage, totalPages, onPageChange }: PaginationProps) => {
-  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+const PaginationComponent = ({
+  currentPage,
+  totalPages,
+  onPageChange,
+}: PaginationProps) => {
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
-    <div className="flex items-center justify-center gap-2 mt-6">
-      <Button
-        variant="outline"
-        size="sm"
-        disabled={currentPage === 1}
+    <div className="pagination-container">
+      <button
+        className="pagination-button"
         onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
       >
-        <ChevronLeft className="w-4 h-4 mr-1" />
-        Prev
-      </Button>
+        Previous
+      </button>
 
-      {pageNumbers.map((number) => (
-        <Button
-          key={number}
-          variant={currentPage === number ? "default" : "outline"}
-          size="sm"
-          onClick={() => onPageChange(number)}
-          className="min-w-[40px]"
+      {pages.map((page) => (
+        <button
+          key={page}
+          className={`pagination-button ${currentPage === page ? "active" : ""}`}
+          onClick={() => onPageChange(page)}
         >
-          {number}
-        </Button>
+          {page}
+        </button>
       ))}
 
-      <Button
-        variant="outline"
-        size="sm"
-        disabled={currentPage === totalPages}
+      <button
+        className="pagination-button"
         onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
       >
         Next
-        <ChevronRight className="w-4 h-4 ml-1" />
-      </Button>
+      </button>
     </div>
   );
 };

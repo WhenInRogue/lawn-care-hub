@@ -1,18 +1,15 @@
+import { ReactNode } from "react";
 import Sidebar from "./Sidebar";
 
 interface LayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="layout">
       <Sidebar />
-      <main className="ml-64 min-h-screen p-8">
-        <div className="animate-fade-in">
-          {children}
-        </div>
-      </main>
+      <div className="main-content">{children}</div>
     </div>
   );
 };
