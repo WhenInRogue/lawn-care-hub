@@ -4,6 +4,7 @@ import Layout from "@/components/layout/Layout";
 import ApiService from "@/services/ApiService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 
 const AddEditEquipmentPage = () => {
@@ -14,7 +15,9 @@ const AddEditEquipmentPage = () => {
 
   const [formData, setFormData] = useState({
     name: "",
+    totalHours: "",
     maintenanceIntervalHours: "",
+    description: "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -31,7 +34,9 @@ const AddEditEquipmentPage = () => {
         const equipment = response.equipment;
         setFormData({
           name: equipment.name || "",
+          totalHours: equipment.totalHours?.toString() || "",
           maintenanceIntervalHours: equipment.maintenanceIntervalHours?.toString() || "",
+          description: equipment.description || "",
         });
       }
     } catch (error: any) {
@@ -39,7 +44,7 @@ const AddEditEquipmentPage = () => {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -49,7 +54,9 @@ const AddEditEquipmentPage = () => {
     try {
       const data = {
         name: formData.name,
+        totalHours: Number(formData.totalHours),
         maintenanceIntervalHours: Number(formData.maintenanceIntervalHours),
+        description: formData.description,
       };
       if (isEdit) {
         await ApiService.updateEquipment(equipmentId!, data);
@@ -72,12 +79,24 @@ const AddEditEquipmentPage = () => {
         <h1>{isEdit ? "Edit Equipment" : "Add New Equipment"}</h1>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Name</label>
+            <label>Equipment Name</label>
             <Input
               name="name"
               value={formData.name}
               onChange={handleChange}
               placeholder="Equipment name"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Total Hours</label>
+            <Input
+              name="totalHours"
+              type="number"
+              value={formData.totalHours}
+              onChange={handleChange}
+              placeholder="e.g. 0"
+              min="0"
               required
             />
           </div>
@@ -91,6 +110,15 @@ const AddEditEquipmentPage = () => {
               placeholder="e.g. 100"
               min="1"
               required
+            />
+          </div>
+          <div className="form-group">
+            <label>Description</label>
+            <Textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Equipment description (optional)"
             />
           </div>
           <div className="button-group">
