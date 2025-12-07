@@ -36,6 +36,7 @@ const DashboardPage = () => {
       try {
         const response = await ApiService.getAllSupplyTransactions();
         if (response.status === 200) {
+          console.log("Transaction data sample:", response.supplyTransactions?.[0]);
           setSupplyTransactionData(transformData(response.supplyTransactions, selectedMonth, selectedYear, transactionType, selectedSupply));
         }
       } catch (error: any) {
