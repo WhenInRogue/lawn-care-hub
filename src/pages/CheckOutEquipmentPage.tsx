@@ -25,7 +25,8 @@ const CheckOutEquipmentPage = () => {
     try {
       const response = await ApiService.getAllEquipment();
       if (response.status === 200) {
-        setEquipmentList(response.equipmentList || []);
+        // Only show available equipment for checkout
+        setEquipmentList((response.equipments || []).filter((eq: any) => eq.equipmentStatus === "AVAILABLE"));
       }
     } catch (error) {
       toast({ title: "Error", description: "Failed to load equipment", variant: "destructive" });

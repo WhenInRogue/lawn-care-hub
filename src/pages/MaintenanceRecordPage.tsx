@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import ApiService from "@/services/ApiService";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -28,8 +27,7 @@ const MaintenanceRecordPage = () => {
   });
 
   const [endFormData, setEndFormData] = useState({
-    notes: "",
-    cost: "",
+    hoursSpent: "",
   });
 
   useEffect(() => {
@@ -43,10 +41,10 @@ const MaintenanceRecordPage = () => {
         ApiService.getAllEquipment(),
       ]);
       if (recordsRes.status === 200) {
-        setRecords(recordsRes.maintenanceRecords);
+        setRecords(recordsRes.maintenanceRecords || []);
       }
       if (equipmentRes.status === 200) {
-        setEquipment(equipmentRes.equipment);
+        setEquipment(equipmentRes.equipments || []);
       }
     } catch (error: any) {
       toast({ title: "Error", description: "Failed to load data", variant: "destructive" });
@@ -73,13 +71,12 @@ const MaintenanceRecordPage = () => {
     if (!selectedRecord) return;
     try {
       await ApiService.endMaintenance({
-        maintenanceRecordId: selectedRecord.id,
-        notes: endFormData.notes,
-        cost: Number(endFormData.cost) || 0,
+        maintenanceRecordId: selectedRecord.maintenanceRecordId,
+        hoursSpent: Number(endFormData.hoursSpent) || 0,
       });
       toast({ title: "Success", description: "Maintenance completed" });
       setShowEndForm(false);
-      setEndFormData({ notes: "", cost: "" });
+      setEndFormData({ hoursSpent: "" });
       setSelectedRecord(null);
       fetchData();
     } catch (error: any) {
@@ -142,7 +139,7 @@ const MaintenanceRecordPage = () => {
                     </SelectTrigger>
                     <SelectContent>
                       {equipment.map((e) => (
-                        <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
+                        <SelectItem key={e.equipmentId} value={e.equipmentId}>{e.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -168,27 +165,20 @@ const MaintenanceRecordPage = () => {
         {showEndForm && selectedRecord && (
           <Card className="shadow-card">
             <CardHeader>
-              <CardTitle>Complete Maintenance - {selectedRecord.equipment?.name}</CardTitle>
+              <CardTitle>Complete Maintenance - {selectedRecord.equipmentName}</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleEndMaintenance} className="space-y-4">
                 <div className="form-group">
-                  <label>Completion Notes</label>
-                  <Textarea
-                    value={endFormData.notes}
-                    onChange={(e) => setEndFormData({ ...endFormData, notes: e.target.value })}
-                    placeholder="Notes about the completed work"
-                    rows={3}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Cost</label>
+                  <label>Hours Spent</label>
                   <Input
                     type="number"
-                    step="0.01"
-                    value={endFormData.cost}
-                    onChange={(e) => setEndFormData({ ...endFormData, cost: e.target.value })}
-                    placeholder="Maintenance cost"
+                    step="0.5"
+                    value={endFormData.hoursSpent}
+                    onChange={(e) => setEndFormData({ ...endFormData, hoursSpent: e.target.value })}
+                    placeholder="Hours spent on maintenance"
+                    min="0"
+                    required
                   />
                 </div>
                 <div className="flex gap-3">
@@ -208,28 +198,30 @@ const MaintenanceRecordPage = () => {
                 <th>Status</th>
                 <th>Start Date</th>
                 <th>End Date</th>
+                <th>Hours Spent</th>
                 <th>Description</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {paginatedRecords.map((record) => (
-                <tr key={record.id}>
-                  <td>{record.equipment?.name || "N/A"}</td>
+                <tr key={record.maintenanceRecordId}>
+                  <td>{record.equipmentName || "N/A"}</td>
                   <td>
                     <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      record.status === "IN_PROGRESS" 
+                      record.maintenanceStatus === "IN_PROGRESS" 
                         ? "bg-yellow-100 text-yellow-700" 
                         : "bg-green-100 text-green-700"
                     }`}>
-                      {record.status === "IN_PROGRESS" ? "In Progress" : "Completed"}
+                      {record.maintenanceStatus === "IN_PROGRESS" ? "In Progress" : "Completed"}
                     </span>
                   </td>
                   <td>{formatDate(record.startDate)}</td>
                   <td>{formatDate(record.endDate)}</td>
+                  <td>{record.hoursSpent || "-"}</td>
                   <td>{record.description || "-"}</td>
                   <td>
-                    {record.status === "IN_PROGRESS" && (
+                    {record.maintenanceStatus === "IN_PROGRESS" && (
                       <Button
                         size="sm"
                         variant="outline"

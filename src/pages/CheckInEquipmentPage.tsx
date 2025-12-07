@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import ApiService from "@/services/ApiService";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
@@ -11,6 +12,7 @@ const CheckInEquipmentPage = () => {
   const [equipmentList, setEquipmentList] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     equipmentId: "",
+    hoursUsed: "",
     description: "",
   });
   const [loading, setLoading] = useState(false);
@@ -25,7 +27,7 @@ const CheckInEquipmentPage = () => {
     try {
       const response = await ApiService.getAllEquipment();
       if (response.status === 200) {
-        setEquipmentList(response.equipmentList || []);
+        setEquipmentList(response.equipments || []);
       }
     } catch (error) {
       toast({ title: "Error", description: "Failed to load equipment", variant: "destructive" });
@@ -42,6 +44,7 @@ const CheckInEquipmentPage = () => {
     try {
       const response = await ApiService.checkInEquipment({ 
         equipmentId: formData.equipmentId, 
+        hoursUsed: Number(formData.hoursUsed) || 0,
         description: formData.description 
       });
       if (response.status === 200) {
@@ -89,6 +92,18 @@ const CheckInEquipmentPage = () => {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          <div className="form-group">
+            <label>Hours Used</label>
+            <Input
+              type="number"
+              step="0.5"
+              value={formData.hoursUsed}
+              onChange={(e) => setFormData({ ...formData, hoursUsed: e.target.value })}
+              placeholder="Enter hours used"
+              min="0"
+              required
+            />
           </div>
           <div className="form-group">
             <label>Description (Optional)</label>

@@ -1,40 +1,38 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import ApiService from "@/services/ApiService";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import PaginationComponent from "@/components/common/PaginationComponent";
 
+const transactionTypes = ["CHECK_IN", "CHECK_OUT"];
+
 const SupplyTransactionsPage = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
-  const [filteredTransactions, setFilteredTransactions] = useState<any[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const itemsPerPage = 10;
-  const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
     fetchTransactions();
-  }, []);
-
-  useEffect(() => {
-    const filtered = transactions.filter((t) =>
-      t.supply?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      t.transactionType?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredTransactions(filtered);
-    setCurrentPage(1);
-  }, [searchTerm, transactions]);
+  }, [currentPage, filter]);
 
   const fetchTransactions = async () => {
     try {
-      const response = await ApiService.getAllSupplyTransactions();
+      const response = await ApiService.getAllSupplyTransactions(filter || undefined);
       if (response.status === 200) {
-        setTransactions(response.supplyTransactions);
-        setFilteredTransactions(response.supplyTransactions);
+        const records = response.supplyTransactions || [];
+        setTotalPages(Math.ceil(records.length / itemsPerPage));
+        setTransactions(
+          records.slice(
+            (currentPage - 1) * itemsPerPage,
+            currentPage * itemsPerPage
+          )
+        );
       }
     } catch (error: any) {
       toast({ title: "Error", description: "Failed to load transactions", variant: "destructive" });
@@ -42,11 +40,6 @@ const SupplyTransactionsPage = () => {
       setLoading(false);
     }
   };
-
-  const paginatedTransactions = filteredTransactions.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -74,12 +67,25 @@ const SupplyTransactionsPage = () => {
         <div className="page-header">
           <h1>Supply Usage</h1>
           <div className="flex gap-4">
-            <Input
-              placeholder="Search transactions..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-64"
-            />
+            <Select 
+              value={filter} 
+              onValueChange={(v) => {
+                setFilter(v === "all" ? "" : v);
+                setCurrentPage(1);
+              }}
+            >
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="All" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                {transactionTypes.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type.replace("_", " ")}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -91,17 +97,14 @@ const SupplyTransactionsPage = () => {
                 <th>Type</th>
                 <th>Quantity</th>
                 <th>Date</th>
+                <th>User</th>
                 <th>Notes</th>
               </tr>
             </thead>
             <tbody>
-              {paginatedTransactions.map((transaction) => (
-                <tr
-                  key={transaction.id}
-                  className="cursor-pointer"
-                  onClick={() => navigate(`/supplyTransactions/${transaction.id}`)}
-                >
-                  <td>{transaction.supply?.name || "N/A"}</td>
+              {transactions.map((transaction) => (
+                <tr key={transaction.supplyTransactionId}>
+                  <td>{transaction.supplyName || "N/A"}</td>
                   <td>
                     <span className={`px-2 py-1 rounded text-xs font-medium ${
                       transaction.transactionType === "CHECK_IN" 
@@ -112,24 +115,25 @@ const SupplyTransactionsPage = () => {
                     </span>
                   </td>
                   <td>{transaction.quantity}</td>
-                  <td>{formatDate(transaction.createdAt)}</td>
-                  <td>{transaction.notes || "-"}</td>
+                  <td>{formatDate(transaction.transactionDate)}</td>
+                  <td>{transaction.userName || "N/A"}</td>
+                  <td>{transaction.note || "-"}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        {filteredTransactions.length === 0 && (
+        {transactions.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground">No transactions found</p>
           </div>
         )}
 
-        {filteredTransactions.length > itemsPerPage && (
+        {totalPages > 1 && (
           <PaginationComponent
             currentPage={currentPage}
-            totalPages={Math.ceil(filteredTransactions.length / itemsPerPage)}
+            totalPages={totalPages}
             onPageChange={setCurrentPage}
           />
         )}
