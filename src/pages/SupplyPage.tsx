@@ -75,7 +75,6 @@ const SupplyPage = () => {
             <Card key={supply.supplyId} className="item-card">
               <CardContent className="p-5">
                 <h3 className="text-lg font-semibold text-foreground mb-2">{supply.name}</h3>
-                <p className="text-sm text-muted-foreground mb-1">Unit Type: {supply.unitOfMeasurement}</p>
                 <p className="text-sm text-muted-foreground mb-1">Current Stock: {supply.currentStock}</p>
                 <p className="text-sm text-muted-foreground mb-1">Reorder Level: {supply.reorderLevel}</p>
                 <p className="text-sm text-muted-foreground mb-3">Max Quantity: {supply.maximumQuantity}</p>
