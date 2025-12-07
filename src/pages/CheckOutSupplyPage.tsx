@@ -13,7 +13,7 @@ const CheckOutSupplyPage = () => {
   const [formData, setFormData] = useState({
     supplyId: "",
     quantity: "",
-    notes: "",
+    note: "",
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ const CheckOutSupplyPage = () => {
       const data = {
         supplyId: formData.supplyId,
         quantity: Number(formData.quantity),
-        notes: formData.notes,
+        note: formData.note,
       };
       await ApiService.checkOutSupply(data);
       toast({ title: "Success", description: "Supply checked out successfully" });
@@ -107,11 +107,11 @@ const CheckOutSupplyPage = () => {
             />
           </div>
           <div className="form-group">
-            <label>Notes (Optional)</label>
+            <label>Note (Optional)</label>
             <Textarea
-              value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              placeholder="Add any notes"
+              value={formData.note}
+              onChange={(e) => setFormData({ ...formData, note: e.target.value })}
+              placeholder="Add a note"
               rows={3}
             />
           </div>
