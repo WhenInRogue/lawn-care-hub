@@ -27,7 +27,7 @@ const CheckInSupplyPage = () => {
     try {
       const response = await ApiService.getAllSupplies();
       if (response.status === 200) {
-        setSupplies(response.supplies);
+        setSupplies(response.supplies || []);
       }
     } catch (error: any) {
       toast({ title: "Error", description: "Failed to load supplies", variant: "destructive" });
@@ -60,6 +60,21 @@ const CheckInSupplyPage = () => {
   return (
     <Layout>
       <div className="form-container animate-fade-in">
+        <div className="button-group mb-6">
+          <Button onClick={() => navigate("/checkInSupply")} className="btn-primary">
+            Check-In Supply
+          </Button>
+          <Button variant="outline" onClick={() => navigate("/checkOutSupply")}>
+            Check-Out Supply
+          </Button>
+          <Button variant="outline" onClick={() => navigate("/checkInEquipment")}>
+            Check-In Equipment
+          </Button>
+          <Button variant="outline" onClick={() => navigate("/checkOutEquipment")}>
+            Check-Out Equipment
+          </Button>
+        </div>
+
         <h1>Check-In Supply</h1>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -70,8 +85,8 @@ const CheckInSupplyPage = () => {
               </SelectTrigger>
               <SelectContent>
                 {supplies.map((supply) => (
-                  <SelectItem key={supply.id} value={supply.id}>
-                    {supply.name} (Current: {supply.quantity})
+                  <SelectItem key={supply.supplyId} value={supply.supplyId}>
+                    {supply.name} (Current: {supply.currentStock})
                   </SelectItem>
                 ))}
               </SelectContent>
