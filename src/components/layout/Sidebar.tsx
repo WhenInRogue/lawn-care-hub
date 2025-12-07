@@ -30,12 +30,9 @@ const Sidebar = () => {
     { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard, show: isAuth },
     { path: "/supplyTransactions", label: "Supply Usage", icon: ClipboardList, show: isAuth },
     { path: "/supply", label: "Supplies", icon: Package, show: isAdmin },
-    { path: "/checkInSupply", label: "Check-In (Supplies)", icon: Download, show: isAuth },
-    { path: "/checkOutSupply", label: "Check-Out (Supplies)", icon: Upload, show: isAuth },
+    { path: "/checkInSupply", label: "Check-In/Out", icon: Download, show: isAuth },
     { path: "/equipment", label: "Equipment", icon: Wrench, show: isAdmin },
     { path: "/equipmentTransactions", label: "Equipment Usage", icon: FileText, show: isAuth },
-    { path: "/checkInEquipment", label: "Check-In (Equipment)", icon: Download, show: isAuth },
-    { path: "/checkOutEquipment", label: "Check-Out (Equipment)", icon: Upload, show: isAuth },
     { path: "/maintenanceRecords", label: "Maintenance", icon: Settings, show: isAdmin },
     { path: "/profile", label: "Profile", icon: User, show: isAuth },
   ];

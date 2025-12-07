@@ -27,7 +27,7 @@ const CheckOutSupplyPage = () => {
     try {
       const response = await ApiService.getAllSupplies();
       if (response.status === 200) {
-        setSupplies(response.supplies.filter((s: any) => s.quantity > 0));
+        setSupplies((response.supplies || []).filter((s: any) => s.currentStock > 0));
       }
     } catch (error: any) {
       toast({ title: "Error", description: "Failed to load supplies", variant: "destructive" });
@@ -57,11 +57,26 @@ const CheckOutSupplyPage = () => {
     }
   };
 
-  const selectedSupply = supplies.find((s) => s.id === formData.supplyId);
+  const selectedSupply = supplies.find((s) => s.supplyId === formData.supplyId);
 
   return (
     <Layout>
       <div className="form-container animate-fade-in">
+        <div className="button-group mb-6">
+          <Button variant="outline" onClick={() => navigate("/checkInSupply")}>
+            Check-In Supply
+          </Button>
+          <Button onClick={() => navigate("/checkOutSupply")} className="btn-primary">
+            Check-Out Supply
+          </Button>
+          <Button variant="outline" onClick={() => navigate("/checkInEquipment")}>
+            Check-In Equipment
+          </Button>
+          <Button variant="outline" onClick={() => navigate("/checkOutEquipment")}>
+            Check-Out Equipment
+          </Button>
+        </div>
+
         <h1>Check-Out Supply</h1>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -72,8 +87,8 @@ const CheckOutSupplyPage = () => {
               </SelectTrigger>
               <SelectContent>
                 {supplies.map((supply) => (
-                  <SelectItem key={supply.id} value={supply.id}>
-                    {supply.name} (Available: {supply.quantity})
+                  <SelectItem key={supply.supplyId} value={supply.supplyId}>
+                    {supply.name} (Available: {supply.currentStock})
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -87,7 +102,7 @@ const CheckOutSupplyPage = () => {
               onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
               placeholder="Enter quantity"
               min="1"
-              max={selectedSupply?.quantity || 999}
+              max={selectedSupply?.currentStock || 999}
               required
             />
           </div>
