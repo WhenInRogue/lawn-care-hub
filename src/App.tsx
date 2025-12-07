@@ -17,6 +17,7 @@ import CheckOutSupplyPage from "./pages/CheckOutSupplyPage";
 import CheckInEquipmentPage from "./pages/CheckInEquipmentPage";
 import CheckOutEquipmentPage from "./pages/CheckOutEquipmentPage";
 import SupplyTransactionsPage from "./pages/SupplyTransactionsPage";
+import SupplyTransactionDetailsPage from "./pages/SupplyTransactionDetailsPage";
 import EquipmentTransactionsPage from "./pages/EquipmentTransactionsPage";
 import MaintenanceRecordPage from "./pages/MaintenanceRecordPage";
 import NotFound from "./pages/NotFound";
@@ -43,6 +44,7 @@ const App = () => (
           <Route path="/checkInSupply" element={<ProtectedRoute element={<CheckInSupplyPage />} />} />
           <Route path="/checkOutSupply" element={<ProtectedRoute element={<CheckOutSupplyPage />} />} />
           <Route path="/supplyTransactions" element={<ProtectedRoute element={<SupplyTransactionsPage />} />} />
+          <Route path="/supplyTransactions/:supplyTransactionId" element={<ProtectedRoute element={<SupplyTransactionDetailsPage />} />} />
           
           {/* Equipment Routes */}
           <Route path="/equipment" element={<AdminRoute element={<EquipmentPage />} />} />
