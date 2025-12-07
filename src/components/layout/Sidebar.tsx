@@ -34,9 +34,7 @@ const Sidebar = () => {
     { path: "/checkOutSupply", label: "Check-Out", icon: Upload, show: isAuth },
     { path: "/equipment", label: "Equipment", icon: Wrench, show: isAdmin },
     { path: "/equipmentTransactions", label: "Equipment Usage", icon: FileText, show: isAuth },
-    { path: "/start-maintenance", label: "Start Maintenance", icon: Settings, show: isAdmin },
-    { path: "/end-maintenance", label: "End Maintenance", icon: AlertCircle, show: isAdmin },
-    { path: "/maintenanceRecords", label: "Maintenance", icon: Wrench, show: isAdmin },
+    { path: "/maintenanceRecords", label: "Maintenance", icon: Settings, show: isAdmin },
     { path: "/profile", label: "Profile", icon: User, show: isAuth },
   ];
 
