@@ -1,9 +1,9 @@
 import axios from "axios";
 import CryptoJS from "crypto-js";
 
-class ApiService {
-  private static BASE_URL = "http://localhost:5050/api";
-  private static ENCRYPTION_KEY = "phegon-dev-inventory";
+export default class ApiService {
+  static BASE_URL = "http://localhost:5050/api";
+  static ENCRYPTION_KEY = "phegon-dev-inventory";
 
   // Encrypt data using CryptoJS
   static encrypt(data: string): string {
@@ -55,14 +55,20 @@ class ApiService {
     };
   }
 
-  // AUTH && USERS API
-  static async registerUser(registerData: { name: string; email: string; password: string; phoneNumber: string }) {
-    const response = await axios.post(`${this.BASE_URL}/auth/register`, registerData);
+  /** AUTH && USERS API */
+  static async registerUser(registerData: any) {
+    const response = await axios.post(
+      `${this.BASE_URL}/auth/register`,
+      registerData
+    );
     return response.data;
   }
 
-  static async loginUser(loginData: { email: string; password: string }) {
-    const response = await axios.post(`${this.BASE_URL}/auth/login`, loginData);
+  static async loginUser(loginData: any) {
+    const response = await axios.post(
+      `${this.BASE_URL}/auth/login`,
+      loginData
+    );
     return response.data;
   }
 
@@ -73,7 +79,7 @@ class ApiService {
     return response.data;
   }
 
-  static async getLoggedInUserInfo() {
+  static async getLoggedInUsesInfo() {
     const response = await axios.get(`${this.BASE_URL}/users/current`, {
       headers: this.getHeader(),
     });
@@ -87,38 +93,53 @@ class ApiService {
     return response.data;
   }
 
-  static async updateUser(userId: string, userData: Record<string, unknown>) {
-    const response = await axios.put(`${this.BASE_URL}/users/update/${userId}`, userData, {
-      headers: this.getHeader(),
-    });
+  static async updateUser(userId: string, userData: any) {
+    const response = await axios.put(
+      `${this.BASE_URL}/users/update/${userId}`,
+      userData,
+      {
+        headers: this.getHeader(),
+      }
+    );
     return response.data;
   }
 
   static async deleteUser(userId: string) {
-    const response = await axios.delete(`${this.BASE_URL}/users/update/${userId}`, {
-      headers: this.getHeader(),
-    });
+    const response = await axios.delete(
+      `${this.BASE_URL}/users/update/${userId}`,
+      {
+        headers: this.getHeader(),
+      }
+    );
     return response.data;
   }
 
   // Supply Endpoints
-  static async createSupply(supplyData: Record<string, unknown>) {
-    const response = await axios.post(`${this.BASE_URL}/supplies/add`, supplyData, {
-      headers: {
-        ...this.getHeader(),
-        Accept: "application/json",
-      },
-    });
+  static async createSupply(supplyData: any) {
+    const response = await axios.post(
+      `${this.BASE_URL}/supplies/add`,
+      supplyData,
+      {
+        headers: {
+          ...this.getHeader(),
+          Accept: "application/json",
+        },
+      }
+    );
     return response.data;
   }
 
-  static async updateSupply(supplyId: string, supplyData: Record<string, unknown>) {
-    const response = await axios.put(`${this.BASE_URL}/supplies/update/${supplyId}`, supplyData, {
-      headers: {
-        ...this.getHeader(),
-        Accept: "application/json",
-      },
-    });
+  static async updateSupply(supplyId: string, supplyData: any) {
+    const response = await axios.put(
+      `${this.BASE_URL}/supplies/update/${supplyId}`,
+      supplyData,
+      {
+        headers: {
+          ...this.getHeader(),
+          Accept: "application/json",
+        },
+      }
+    );
     return response.data;
   }
 
@@ -145,17 +166,24 @@ class ApiService {
   }
 
   static async deleteSupply(supplyId: string) {
-    const response = await axios.delete(`${this.BASE_URL}/supplies/delete/${supplyId}`, {
-      headers: this.getHeader(),
-    });
+    const response = await axios.delete(
+      `${this.BASE_URL}/supplies/delete/${supplyId}`,
+      {
+        headers: this.getHeader(),
+      }
+    );
     return response.data;
   }
 
   // Equipment Endpoints
-  static async createEquipment(equipmentData: Record<string, unknown>) {
-    const response = await axios.post(`${this.BASE_URL}/equipment/add`, equipmentData, {
-      headers: this.getHeader(),
-    });
+  static async createEquipment(equipmentData: any) {
+    const response = await axios.post(
+      `${this.BASE_URL}/equipment/add`,
+      equipmentData,
+      {
+        headers: this.getHeader(),
+      }
+    );
     return response.data;
   }
 
@@ -167,114 +195,175 @@ class ApiService {
   }
 
   static async getEquipmentById(equipmentId: string) {
-    const response = await axios.get(`${this.BASE_URL}/equipment/${equipmentId}`, {
-      headers: this.getHeader(),
-    });
+    const response = await axios.get(
+      `${this.BASE_URL}/equipment/${equipmentId}`,
+      {
+        headers: this.getHeader(),
+      }
+    );
     return response.data;
   }
 
-  static async updateEquipment(equipmentId: string, equipmentData: Record<string, unknown>) {
-    const response = await axios.put(`${this.BASE_URL}/equipment/update/${equipmentId}`, equipmentData, {
-      headers: this.getHeader(),
-    });
+  static async updateEquipment(equipmentId: string, equipmentData: any) {
+    const response = await axios.put(
+      `${this.BASE_URL}/equipment/update/${equipmentId}`,
+      equipmentData,
+      {
+        headers: this.getHeader(),
+      }
+    );
     return response.data;
   }
 
   static async deleteEquipment(equipmentId: string) {
-    const response = await axios.delete(`${this.BASE_URL}/equipment/delete/${equipmentId}`, {
-      headers: this.getHeader(),
-    });
+    const response = await axios.delete(
+      `${this.BASE_URL}/equipment/delete/${equipmentId}`,
+      {
+        headers: this.getHeader(),
+      }
+    );
     return response.data;
   }
 
   // Equipment Transactions Endpoints
-  static async checkInEquipment(body: { equipmentId: string; totalHoursInput: number; note: string }) {
-    const response = await axios.post(`${this.BASE_URL}/equipmentTransactions/checkInEquipment`, body, {
-      headers: this.getHeader(),
-    });
+  static async checkInEquipment(body: any) {
+    const response = await axios.post(
+      `${this.BASE_URL}/equipmentTransactions/checkInEquipment`,
+      body,
+      {
+        headers: this.getHeader(),
+      }
+    );
     return response.data;
   }
 
-  static async checkOutEquipment(body: { equipmentId: string; totalHoursInput: number; note: string }) {
-    const response = await axios.post(`${this.BASE_URL}/equipmentTransactions/checkOutEquipment`, body, {
-      headers: this.getHeader(),
-    });
+  static async checkOutEquipment(body: any) {
+    const response = await axios.post(
+      `${this.BASE_URL}/equipmentTransactions/checkOutEquipment`,
+      body,
+      {
+        headers: this.getHeader(),
+      }
+    );
     return response.data;
   }
 
   static async getAllEquipmentTransactions(equipmentTransactionFilter?: string) {
-    const response = await axios.get(`${this.BASE_URL}/equipmentTransactions/all`, {
-      headers: this.getHeader(),
-      params: { equipmentTransactionFilter },
-    });
+    const response = await axios.get(
+      `${this.BASE_URL}/equipmentTransactions/all`,
+      {
+        headers: this.getHeader(),
+        params: { equipmentTransactionFilter },
+      }
+    );
     return response.data;
   }
 
-  static async getEquipmentTransactionsByMonthAndYear(month: number, year: number) {
-    const response = await axios.get(`${this.BASE_URL}/equipmentTransactions/by-month-year`, {
-      headers: this.getHeader(),
-      params: { month, year },
-    });
+  static async getEquipmentTransactionsByMonthAndYear(
+    month: number,
+    year: number
+  ) {
+    const response = await axios.get(
+      `${this.BASE_URL}/equipmentTransactions/by-month-year`,
+      {
+        headers: this.getHeader(),
+        params: {
+          month: month,
+          year: year,
+        },
+      }
+    );
     return response.data;
   }
 
   static async getEquipmentTransactionById(equipmentTransactionId: string) {
-    const response = await axios.get(`${this.BASE_URL}/equipmentTransactions/${equipmentTransactionId}`, {
-      headers: this.getHeader(),
-    });
+    const response = await axios.get(
+      `${this.BASE_URL}/equipmentTransactions/${equipmentTransactionId}`,
+      {
+        headers: this.getHeader(),
+      }
+    );
     return response.data;
   }
 
   // Supply Transactions Endpoints
-  static async checkInSupply(body: { supplyId: string; quantity: number; note: string }) {
-    const response = await axios.post(`${this.BASE_URL}/supplyTransactions/checkInSupply`, body, {
-      headers: this.getHeader(),
-    });
+  static async checkInSupply(body: any) {
+    const response = await axios.post(
+      `${this.BASE_URL}/supplyTransactions/checkInSupply`,
+      body,
+      {
+        headers: this.getHeader(),
+      }
+    );
     return response.data;
   }
 
-  static async checkOutSupply(body: { supplyId: string; quantity: number; note: string }) {
-    const response = await axios.post(`${this.BASE_URL}/supplyTransactions/checkOutSupply`, body, {
-      headers: this.getHeader(),
-    });
+  static async checkOutSupply(body: any) {
+    const response = await axios.post(
+      `${this.BASE_URL}/supplyTransactions/checkOutSupply`,
+      body,
+      {
+        headers: this.getHeader(),
+      }
+    );
     return response.data;
   }
 
   static async getAllSupplyTransactions(filter?: string) {
-    const response = await axios.get(`${this.BASE_URL}/supplyTransactions/all`, {
-      headers: this.getHeader(),
-      params: { filter },
-    });
+    const response = await axios.get(
+      `${this.BASE_URL}/supplyTransactions/all`,
+      {
+        headers: this.getHeader(),
+        params: { filter },
+      }
+    );
     return response.data;
   }
 
   static async getSupplyTransactionsByMonthAndYear(month: number, year: number) {
-    const response = await axios.get(`${this.BASE_URL}/supplyTransactions/by-month-year`, {
-      headers: this.getHeader(),
-      params: { month, year },
-    });
+    const response = await axios.get(
+      `${this.BASE_URL}/supplyTransactions/by-month-year`,
+      {
+        headers: this.getHeader(),
+        params: {
+          month: month,
+          year: year,
+        },
+      }
+    );
     return response.data;
   }
 
   static async getSupplyTransactionById(supplyTransactionId: string) {
-    const response = await axios.get(`${this.BASE_URL}/supplyTransactions/${supplyTransactionId}`, {
-      headers: this.getHeader(),
-    });
+    const response = await axios.get(
+      `${this.BASE_URL}/supplyTransactions/${supplyTransactionId}`,
+      {
+        headers: this.getHeader(),
+      }
+    );
     return response.data;
   }
 
   // Maintenance Records Endpoints
-  static async startMaintenance(body: { equipmentId: string; totalHoursInput: number }) {
-    const response = await axios.post(`${this.BASE_URL}/maintenance/start`, body, {
-      headers: this.getHeader(),
-    });
+  static async startMaintenance(body: any) {
+    const response = await axios.post(
+      `${this.BASE_URL}/maintenance/start`,
+      body,
+      {
+        headers: this.getHeader(),
+      }
+    );
     return response.data;
   }
 
-  static async endMaintenance(body: { equipmentId: string; totalHoursInput: number; maintenancePerformed: string; note: string }) {
-    const response = await axios.post(`${this.BASE_URL}/maintenance/end`, body, {
-      headers: this.getHeader(),
-    });
+  static async endMaintenance(body: any) {
+    const response = await axios.post(
+      `${this.BASE_URL}/maintenance/end`,
+      body,
+      {
+        headers: this.getHeader(),
+      }
+    );
     return response.data;
   }
 
@@ -286,13 +375,16 @@ class ApiService {
   }
 
   static async getMaintenanceRecordsByEquipment(equipmentId: string) {
-    const response = await axios.get(`${this.BASE_URL}/maintenance/equipment/${equipmentId}`, {
-      headers: this.getHeader(),
-    });
+    const response = await axios.get(
+      `${this.BASE_URL}/maintenance/equipment/${equipmentId}`,
+      {
+        headers: this.getHeader(),
+      }
+    );
     return response.data;
   }
 
-  // AUTHENTICATION CHECKER
+  /** AUTHENTICATION CHECKER */
   static logout(): void {
     this.clearAuth();
   }
@@ -307,5 +399,3 @@ class ApiService {
     return role === "ADMIN";
   }
 }
-
-export default ApiService;
