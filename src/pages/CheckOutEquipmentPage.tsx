@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import ApiService from "@/services/ApiService";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
@@ -11,6 +12,7 @@ const CheckOutEquipmentPage = () => {
   const [equipmentList, setEquipmentList] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     equipmentId: "",
+    totalHoursInput: "",
     description: "",
   });
   const [loading, setLoading] = useState(false);
@@ -42,7 +44,8 @@ const CheckOutEquipmentPage = () => {
     setLoading(true);
     try {
       const response = await ApiService.checkOutEquipment({ 
-        equipmentId: formData.equipmentId, 
+        equipmentId: formData.equipmentId,
+        totalHoursInput: parseFloat(formData.totalHoursInput) || 0,
         description: formData.description 
       });
       if (response.status === 200) {
@@ -90,6 +93,18 @@ const CheckOutEquipmentPage = () => {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          <div className="form-group">
+            <label>Total Hours</label>
+            <Input
+              type="number"
+              step="0.5"
+              value={formData.totalHoursInput}
+              onChange={(e) => setFormData({ ...formData, totalHoursInput: e.target.value })}
+              placeholder="Enter total hours"
+              min="0"
+              required
+            />
           </div>
           <div className="form-group">
             <label>Description (Optional)</label>
