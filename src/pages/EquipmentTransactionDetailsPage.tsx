@@ -103,10 +103,12 @@ const EquipmentTransactionDetailsPage = () => {
                   <span className="text-muted-foreground">Total Hours</span>
                   <span className="font-medium">{equipmentTransaction.totalHoursInput}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Hours Logged</span>
-                  <span className="font-medium">{equipmentTransaction.hoursLogged}</span>
-                </div>
+                {equipmentTransaction.equipmentTransactionType === "CHECK_IN" && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Hours Logged</span>
+                    <span className="font-medium">{equipmentTransaction.hoursLogged ?? 0}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Timestamp</span>
                   <span className="font-medium text-sm">{new Date(equipmentTransaction.timestamp).toLocaleString()}</span>
