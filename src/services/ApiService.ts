@@ -79,7 +79,7 @@ export default class ApiService {
     return response.data;
   }
 
-  static async getLoggedInUsesInfo() {
+  static async getLoggedInUserInfo() {
     const response = await axios.get(`${this.BASE_URL}/users/current`, {
       headers: this.getHeader(),
     });
