@@ -54,7 +54,15 @@ const RegisterPage = () => {
             </div>
             <div className="relative">
               <Mail className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-              <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10" required />
+              <Input 
+                type="email" 
+                placeholder="Email" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+                pattern=".+@.+\..+"
+                className="pl-10" 
+                required 
+              />
             </div>
             <div className="relative">
               <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
@@ -62,7 +70,23 @@ const RegisterPage = () => {
             </div>
             <div className="relative">
               <Phone className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-              <Input type="text" placeholder="Phone Number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="pl-10" required />
+              <Input 
+                type="tel" 
+                inputMode="numeric"
+                pattern="\d{9,12}"
+                placeholder="Phone Number" 
+                value={phoneNumber} 
+                minLength={9}
+                maxLength={12}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d{0,12}$/.test(value)) {
+                    setPhoneNumber(value);
+                  }
+                }}
+                className="pl-10" 
+                required 
+              />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Creating Account..." : "Register"}
