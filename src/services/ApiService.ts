@@ -187,9 +187,10 @@ export default class ApiService {
     return response.data;
   }
 
-  static async getAllEquipment() {
+  static async getAllEquipment(equipmentStatusFilter?: string) {
     const response = await axios.get(`${this.BASE_URL}/equipment/all`, {
       headers: this.getHeader(),
+      params: { equipmentStatusFilter },
     });
     return response.data;
   }

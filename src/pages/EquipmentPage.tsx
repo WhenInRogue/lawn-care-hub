@@ -4,50 +4,57 @@ import Layout from "@/components/layout/Layout";
 import ApiService from "@/services/ApiService";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import PaginationComponent from "@/components/common/PaginationComponent";
 
+const equipmentStatusOptions = ["AVAILABLE", "IN_USE", "MAINTENANCE"];
+
 const EquipmentPage = () => {
   const [equipment, setEquipment] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [equipmentStatusFilter, setEquipmentStatusFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const itemsPerPage = 10;
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
     fetchEquipment();
-  }, []);
+  }, [currentPage, equipmentStatusFilter]);
 
   const fetchEquipment = async () => {
     try {
-      const response = await ApiService.getAllEquipment();
+      const response = await ApiService.getAllEquipment(equipmentStatusFilter || undefined);
       if (response.status === 200) {
-        setEquipment(response.equipment);
+        const records = response.equipments || [];
+        setTotalPages(Math.ceil(records.length / itemsPerPage));
+        setEquipment(
+          records.slice(
+            (currentPage - 1) * itemsPerPage,
+            currentPage * itemsPerPage
+          )
+        );
       }
     } catch (error: any) {
-      toast({ title: "Error", description: "Failed to load equipment", variant: "destructive" });
+      toast({ title: "Error", description: error.response?.data?.message || "Failed to load equipment", variant: "destructive" });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (equipmentId: string) => {
     if (!window.confirm("Are you sure you want to delete this equipment?")) return;
     try {
-      await ApiService.deleteEquipment(id);
+      await ApiService.deleteEquipment(equipmentId);
       toast({ title: "Success", description: "Equipment deleted successfully" });
       fetchEquipment();
     } catch (error: any) {
-      toast({ title: "Error", description: "Failed to delete equipment", variant: "destructive" });
+      toast({ title: "Error", description: error.response?.data?.message || "Failed to delete equipment", variant: "destructive" });
     }
   };
-
-  const paginatedEquipment = equipment.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
 
   if (loading) {
     return (
@@ -64,25 +71,54 @@ const EquipmentPage = () => {
       <div className="space-y-6 animate-fade-in">
         <div className="page-header">
           <h1>Equipment</h1>
-          <Button onClick={() => navigate("/equipment/add")} className="btn-primary">
-            <Plus className="w-4 h-4" />
-            Add Equipment
-          </Button>
+          <div className="flex gap-4">
+            <Select 
+              value={equipmentStatusFilter} 
+              onValueChange={(v) => {
+                setEquipmentStatusFilter(v === "all" ? "" : v);
+                setCurrentPage(1);
+              }}
+            >
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="All" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                {equipmentStatusOptions.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status.replace("_", " ")}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button onClick={() => navigate("/equipment/add")} className="btn-primary">
+              <Plus className="w-4 h-4" />
+              Add Equipment
+            </Button>
+          </div>
         </div>
 
         <div className="cards-grid">
-          {paginatedEquipment.map((item) => (
-            <Card key={item.id} className="item-card">
+          {equipment.map((item) => (
+            <Card 
+              key={item.equipmentId} 
+              className={`item-card ${item.maintenanceDue ? "border-destructive border-2" : ""}`}
+            >
               <CardContent className="p-5">
                 <h3 className="text-lg font-semibold text-foreground mb-2">{item.name}</h3>
-                <p className="text-sm text-muted-foreground mb-1">Serial: {item.serialNumber}</p>
-                <p className="text-sm text-muted-foreground mb-1">Status: {item.status}</p>
-                <p className="text-sm text-muted-foreground mb-4">Location: {item.location}</p>
+                <p className="text-sm text-muted-foreground mb-1">Total Hours: {item.totalHours}</p>
+                <p className="text-sm text-muted-foreground mb-1">Maintenance Interval: {item.maintenanceIntervalHours}</p>
+                <p className="text-sm text-muted-foreground mb-1">Status: {item.equipmentStatus}</p>
+                <p className="text-sm text-muted-foreground mb-1">
+                  Maintenance Due: <span className={item.maintenanceDue ? "text-destructive font-semibold" : ""}>{item.maintenanceDue ? "Yes" : "No"}</span>
+                </p>
+                <p className="text-sm text-muted-foreground mb-1">Next Maintenance At: {item.nextMaintenanceDueHours}</p>
+                <p className="text-sm text-muted-foreground mb-4">Last Checked Out By: {item.lastCheckedOutBy || "N/A"}</p>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => navigate(`/equipment/edit/${item.id}`)}
+                    onClick={() => navigate(`/equipment/edit/${item.equipmentId}`)}
                   >
                     <Edit className="w-4 h-4 mr-1" />
                     Edit
@@ -90,7 +126,7 @@ const EquipmentPage = () => {
                   <Button
                     variant="destructive"
                     size="sm"
-                    onClick={() => handleDelete(item.id)}
+                    onClick={() => handleDelete(item.equipmentId)}
                   >
                     <Trash2 className="w-4 h-4 mr-1" />
                     Delete
@@ -107,10 +143,10 @@ const EquipmentPage = () => {
           </div>
         )}
 
-        {equipment.length > itemsPerPage && (
+        {totalPages > 1 && (
           <PaginationComponent
             currentPage={currentPage}
-            totalPages={Math.ceil(equipment.length / itemsPerPage)}
+            totalPages={totalPages}
             onPageChange={setCurrentPage}
           />
         )}
