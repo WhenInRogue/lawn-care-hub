@@ -72,17 +72,18 @@ const SupplyPage = () => {
 
         <div className="cards-grid">
           {paginatedSupplies.map((supply) => (
-            <Card key={supply.id} className="item-card">
+            <Card key={supply.supplyId} className="item-card">
               <CardContent className="p-5">
                 <h3 className="text-lg font-semibold text-foreground mb-2">{supply.name}</h3>
-                <p className="text-sm text-muted-foreground mb-1">SKU: {supply.sku}</p>
-                <p className="text-sm text-muted-foreground mb-1">Quantity: {supply.quantity}</p>
-                <p className="text-sm text-muted-foreground mb-4">Price: ${supply.price}</p>
+                <p className="text-sm text-muted-foreground mb-1">Unit Type: {supply.unitOfMeasurement}</p>
+                <p className="text-sm text-muted-foreground mb-1">Current Stock: {supply.currentStock}</p>
+                <p className="text-sm text-muted-foreground mb-1">Reorder Level: {supply.reorderLevel}</p>
+                <p className="text-sm text-muted-foreground mb-4">Max Quantity: {supply.maximumQuantity}</p>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => navigate(`/supply/edit/${supply.id}`)}
+                    onClick={() => navigate(`/supply/edit/${supply.supplyId}`)}
                   >
                     <Edit className="w-4 h-4 mr-1" />
                     Edit
@@ -90,7 +91,7 @@ const SupplyPage = () => {
                   <Button
                     variant="destructive"
                     size="sm"
-                    onClick={() => handleDelete(supply.id)}
+                    onClick={() => handleDelete(supply.supplyId)}
                   >
                     <Trash2 className="w-4 h-4 mr-1" />
                     Delete
