@@ -15,8 +15,10 @@ const AddEditSupplyPage = () => {
   const [formData, setFormData] = useState({
     name: "",
     unitOfMeasurement: "",
+    currentStock: "",
     reorderLevel: "",
     maximumQuantity: "",
+    description: "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -34,8 +36,10 @@ const AddEditSupplyPage = () => {
         setFormData({
           name: supply.name || "",
           unitOfMeasurement: supply.unitOfMeasurement || "",
+          currentStock: String(supply.currentStock) || "",
           reorderLevel: String(supply.reorderLevel) || "",
           maximumQuantity: String(supply.maximumQuantity) || "",
+          description: supply.description || "",
         });
       }
     } catch (error: any) {
@@ -54,8 +58,10 @@ const AddEditSupplyPage = () => {
       const data = {
         name: formData.name,
         unitOfMeasurement: formData.unitOfMeasurement,
+        currentStock: Number(formData.currentStock),
         reorderLevel: Number(formData.reorderLevel),
         maximumQuantity: Number(formData.maximumQuantity),
+        description: formData.description,
       };
       if (isEdit) {
         await ApiService.updateSupply(supplyId!, data);
@@ -98,6 +104,18 @@ const AddEditSupplyPage = () => {
             />
           </div>
           <div className="form-group">
+            <label>Current Stock</label>
+            <Input
+              name="currentStock"
+              type="number"
+              value={formData.currentStock}
+              onChange={handleChange}
+              placeholder="Current stock quantity"
+              min="0"
+              required
+            />
+          </div>
+          <div className="form-group">
             <label>Reorder Level</label>
             <Input
               name="reorderLevel"
@@ -119,6 +137,15 @@ const AddEditSupplyPage = () => {
               placeholder="Maximum stock capacity"
               min="1"
               required
+            />
+          </div>
+          <div className="form-group">
+            <label>Description</label>
+            <Input
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Supply description (optional)"
             />
           </div>
           <div className="button-group">
