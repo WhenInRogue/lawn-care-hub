@@ -74,7 +74,13 @@ const EquipmentTransactionsPage = () => {
             <Input
               placeholder="Search transaction..."
               value={equipmentTransactionFilter}
-              onChange={(e) => setEquipmentTransactionFilter(e.target.value)}
+              onChange={(e) => {
+                setEquipmentTransactionFilter(e.target.value);
+                if (e.target.value === "") {
+                  setCurrentPage(1);
+                  setValueToSearch("");
+                }
+              }}
               className="w-64"
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             />
