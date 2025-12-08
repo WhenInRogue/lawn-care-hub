@@ -35,6 +35,7 @@ const Sidebar = () => {
     { path: "/equipmentTransactions", label: "Equipment Usage", icon: FileText, show: isAuth },
     { path: "/maintenanceRecords", label: "Maintenance", icon: Settings, show: isAdmin },
     { path: "/profile", label: "Profile", icon: User, show: isAuth },
+    { path: "/register", label: "Register User", icon: User, show: isAdmin },
   ];
 
   return (
