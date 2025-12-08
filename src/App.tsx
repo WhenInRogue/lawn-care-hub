@@ -33,7 +33,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/register" element={<AdminRoute element={<RegisterPage />} />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/profile" element={<ProtectedRoute element={<ProfilePage />} />} />
           <Route path="/dashboard" element={<ProtectedRoute element={<DashboardPage />} />} />
