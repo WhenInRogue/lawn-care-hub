@@ -250,12 +250,12 @@ export default class ApiService {
     return response.data;
   }
 
-  static async getAllEquipmentTransactions(equipmentTransactionFilter?: string) {
+  static async getAllEquipmentTransactions(filter?: string, page: number = 0, size: number = 1000) {
     const response = await axios.get(
       `${this.BASE_URL}/equipmentTransactions/all`,
       {
         headers: this.getHeader(),
-        params: { equipmentTransactionFilter },
+        params: { filter, page, size },
       }
     );
     return response.data;
