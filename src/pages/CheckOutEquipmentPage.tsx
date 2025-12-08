@@ -49,8 +49,10 @@ const CheckOutEquipmentPage = () => {
         note: formData.note 
       });
       if (response.status === 200) {
-        toast({ title: "Success", description: "Equipment checked out successfully" });
+        toast({ title: "Success", description: response.message || "Equipment checked out successfully" });
         navigate("/equipmentTransactions");
+      } else {
+        toast({ title: "Error", description: response.message || "Check-out failed", variant: "destructive" });
       }
     } catch (error: any) {
       toast({ title: "Error", description: error.response?.data?.message || "Failed to check out equipment", variant: "destructive" });
