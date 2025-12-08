@@ -76,12 +76,6 @@ const LoginPage = () => {
               {loading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
-          <p className="text-center mt-6 text-sm text-muted-foreground">
-            Don't have an account?{" "}
-            <Link to="/register" className="text-primary font-semibold hover:underline">
-              Register
-            </Link>
-          </p>
         </CardContent>
       </Card>
     </div>
