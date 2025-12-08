@@ -47,9 +47,13 @@ const CheckOutSupplyPage = () => {
         quantity: Number(formData.quantity),
         note: formData.note,
       };
-      await ApiService.checkOutSupply(data);
-      toast({ title: "Success", description: "Supply checked out successfully" });
-      navigate("/supplyTransactions");
+      const response = await ApiService.checkOutSupply(data);
+      if (response.status === 200) {
+        toast({ title: "Success", description: response.message || "Supply checked out successfully" });
+        navigate("/supplyTransactions");
+      } else {
+        toast({ title: "Error", description: response.message || "Check-out failed", variant: "destructive" });
+      }
     } catch (error: any) {
       toast({ title: "Error", description: error.response?.data?.message || "Check-out failed", variant: "destructive" });
     } finally {
