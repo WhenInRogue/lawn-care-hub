@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useToast } from "@/hooks/use-toast";
-import { Package, Wrench, AlertTriangle, CheckCircle } from "lucide-react";
+import { Wrench, AlertTriangle, CheckCircle } from "lucide-react";
 
 const DashboardPage = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
@@ -49,7 +49,6 @@ const DashboardPage = () => {
   }, [selectedMonth, selectedYear, transactionType]);
 
   // Summary statistics
-  const totalSupplies = supplies.length;
   const lowStockSupplies = supplies.filter((s: any) => s.currentStock <= s.reorderLevel).length;
   const totalEquipment = equipment.length;
   const availableEquipment = equipment.filter((e: any) => e.equipmentStatus === "AVAILABLE").length;
@@ -84,18 +83,7 @@ const DashboardPage = () => {
         </div>
 
         {/* Summary Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="shadow-card">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Supplies</CardTitle>
-              <Package className="h-4 w-4 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{totalSupplies}</div>
-              <p className="text-xs text-muted-foreground">Items in inventory</p>
-            </CardContent>
-          </Card>
-
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card className="shadow-card">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Low Stock Alerts</CardTitle>
