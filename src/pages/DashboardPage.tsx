@@ -2,24 +2,37 @@ import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import ApiService from "@/services/ApiService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { Wrench, AlertTriangle, CheckCircle } from "lucide-react";
+import { Wrench, AlertTriangle, CheckCircle, Package, Clock } from "lucide-react";
+
+interface Supply {
+  supplyId: number;
+  name: string;
+  currentStock: number;
+  maximumQuantity: number;
+  reorderLevel: number;
+  unitOfMeasurement: string;
+}
+
+interface Equipment {
+  equipmentId: number;
+  name: string;
+  totalHours: number;
+  lastMaintenanceHours: number;
+  maintenanceIntervalHours: number;
+  equipmentStatus: string;
+}
 
 const DashboardPage = () => {
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedData, setSelectedData] = useState("count");
-  const [transactionType, setTransactionType] = useState("all");
-  const [supplyTransactionData, setSupplyTransactionData] = useState<any[]>([]);
-  const [supplies, setSupplies] = useState<any[]>([]);
-  const [equipment, setEquipment] = useState<any[]>([]);
+  const [supplies, setSupplies] = useState<Supply[]>([]);
+  const [equipment, setEquipment] = useState<Equipment[]>([]);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchSummaryData = async () => {
+    const fetchData = async () => {
       try {
         const [suppliesRes, equipmentRes] = await Promise.all([
           ApiService.getAllSupplies(),
@@ -28,52 +41,43 @@ const DashboardPage = () => {
         if (suppliesRes.status === 200) setSupplies(suppliesRes.supplies || []);
         if (equipmentRes.status === 200) setEquipment(equipmentRes.equipments || []);
       } catch (error) {
-        console.error("Failed to fetch summary data");
-      }
-    };
-    fetchSummaryData();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await ApiService.getAllSupplyTransactions();
-        if (response.status === 200) {
-          setSupplyTransactionData(transformData(response.supplyTransactions, selectedMonth, selectedYear, transactionType));
-        }
-      } catch (error: any) {
-        toast({ title: "Error", description: "Failed to fetch transactions", variant: "destructive" });
+        toast({ title: "Error", description: "Failed to fetch data", variant: "destructive" });
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
-  }, [selectedMonth, selectedYear, transactionType]);
+  }, []);
 
   // Summary statistics
-  const lowStockSupplies = supplies.filter((s: any) => s.currentStock <= s.reorderLevel).length;
+  const lowStockSupplies = supplies.filter((s) => s.currentStock <= s.reorderLevel);
   const totalEquipment = equipment.length;
-  const availableEquipment = equipment.filter((e: any) => e.equipmentStatus === "AVAILABLE").length;
-  const maintenanceEquipment = equipment.filter((e: any) => e.equipmentStatus === "MAINTENANCE").length;
+  const availableEquipment = equipment.filter((e) => e.equipmentStatus === "AVAILABLE").length;
+  const maintenanceEquipment = equipment.filter((e) => e.equipmentStatus === "MAINTENANCE").length;
 
-  const transformData = (transactions: any[], month: number, year: number, type: string) => {
-    const daysInMonth = new Date(year, month, 0).getDate();
-    const dailyData: Record<number, { day: number; count: number; quantity: number }> = {};
-    for (let day = 1; day <= daysInMonth; day++) {
-      dailyData[day] = { day, count: 0, quantity: 0 };
-    }
-    transactions.forEach((t: any) => {
-      const date = new Date(t.createdAt);
-      const matchesType = type === "all" || t.supplyTransactionType === type;
-      if (date.getMonth() + 1 === month && date.getFullYear() === year && matchesType) {
-        const day = date.getDate();
-        dailyData[day].count += 1;
-        dailyData[day].quantity += t.quantity;
-      }
-    });
-    return Object.values(dailyData);
+  // Equipment needing maintenance (approaching or past due)
+  const getMaintenanceStatus = (e: Equipment) => {
+    if (!e.totalHours || !e.maintenanceIntervalHours) return null;
+    const lastMaintenance = e.lastMaintenanceHours || 0;
+    const nextDue = lastMaintenance + e.maintenanceIntervalHours;
+    const hoursUntilDue = nextDue - e.totalHours;
+    return { nextDue, hoursUntilDue, overdue: hoursUntilDue <= 0 };
   };
 
-  const months = Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: new Date(0, i).toLocaleString("default", { month: "long" }) }));
-  const years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
+  const maintenanceAlerts = equipment
+    .map((e) => ({ ...e, status: getMaintenanceStatus(e) }))
+    .filter((e) => e.status && e.status.hoursUntilDue <= e.maintenanceIntervalHours * 0.2) // Within 20% of interval
+    .sort((a, b) => (a.status?.hoursUntilDue || 0) - (b.status?.hoursUntilDue || 0));
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -90,7 +94,7 @@ const DashboardPage = () => {
               <AlertTriangle className="h-4 w-4 text-destructive" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-foreground">{lowStockSupplies}</div>
+              <div className="text-2xl font-bold text-foreground">{lowStockSupplies.length}</div>
               <p className="text-xs text-muted-foreground">Supplies need reorder</p>
             </CardContent>
           </Card>
@@ -120,49 +124,105 @@ const DashboardPage = () => {
           </Card>
         </div>
 
-        {/* Chart Controls */}
-        <div className="flex items-center justify-end gap-4">
-          <Button variant={selectedData === "count" ? "default" : "outline"} onClick={() => setSelectedData("count")}>Transactions</Button>
-          <Button variant={selectedData === "quantity" ? "default" : "outline"} onClick={() => setSelectedData("quantity")}>Quantity</Button>
-        </div>
+        {/* Two Column Layout for Lists */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Low Stock Supplies */}
+          <Card className="shadow-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Package className="h-5 w-5 text-destructive" />
+                Low Stock Supplies
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {lowStockSupplies.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <CheckCircle className="h-12 w-12 mx-auto mb-2 text-accent" />
+                  <p>All supplies are well stocked!</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {lowStockSupplies.map((supply) => {
+                    const stockPercent = (supply.currentStock / supply.maximumQuantity) * 100;
+                    return (
+                      <div key={supply.supplyId} className="p-3 rounded-lg bg-muted/50 border border-border/50">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-medium text-foreground">{supply.name}</span>
+                          <Badge variant="destructive" className="text-xs">Low Stock</Badge>
+                        </div>
+                        <Progress 
+                          value={stockPercent} 
+                          className="h-2 mb-2" 
+                        />
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                          <span>{supply.currentStock} / {supply.maximumQuantity} {supply.unitOfMeasurement}</span>
+                          <span>Reorder at: {supply.reorderLevel}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-        <Card className="shadow-card">
-          <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-4">
-            <CardTitle>Daily Supply Usage</CardTitle>
-            <div className="flex gap-4 flex-wrap">
-              <Select value={transactionType} onValueChange={setTransactionType}>
-                <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="CHECK_IN">Check In</SelectItem>
-                  <SelectItem value="CHECK_OUT">Check Out</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={String(selectedMonth)} onValueChange={(v) => setSelectedMonth(Number(v))}>
-                <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
-                <SelectContent>{months.map((m) => <SelectItem key={m.value} value={String(m.value)}>{m.label}</SelectItem>)}</SelectContent>
-              </Select>
-              <Select value={String(selectedYear)} onValueChange={(v) => setSelectedYear(Number(v))}>
-                <SelectTrigger className="w-28"><SelectValue /></SelectTrigger>
-                <SelectContent>{years.map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[400px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={supplyTransactionData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" />
-                  <YAxis stroke="hsl(var(--muted-foreground))" />
-                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }} />
-                  <Legend />
-                  <Line type="monotone" dataKey={selectedData} stroke="hsl(var(--primary))" strokeWidth={2} dot={{ fill: "hsl(var(--primary))" }} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Maintenance Alerts */}
+          <Card className="shadow-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="h-5 w-5 text-warning" />
+                Maintenance Alerts
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {maintenanceAlerts.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <CheckCircle className="h-12 w-12 mx-auto mb-2 text-accent" />
+                  <p>No upcoming maintenance needed!</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {maintenanceAlerts.map((equip) => (
+                    <div key={equip.equipmentId} className="p-3 rounded-lg bg-muted/50 border border-border/50">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-medium text-foreground">{equip.name}</span>
+                        <Badge 
+                          variant={equip.status?.overdue ? "destructive" : "secondary"}
+                          className="text-xs"
+                        >
+                          {equip.status?.overdue ? "Overdue" : "Due Soon"}
+                        </Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                        <div>
+                          <span className="block text-foreground font-medium">{equip.totalHours?.toFixed(1) || 0} hrs</span>
+                          <span>Current Hours</span>
+                        </div>
+                        <div>
+                          <span className="block text-foreground font-medium">{equip.status?.nextDue?.toFixed(1) || 0} hrs</span>
+                          <span>Next Service Due</span>
+                        </div>
+                      </div>
+                      {equip.status && (
+                        <div className="mt-2 text-xs">
+                          {equip.status.overdue ? (
+                            <span className="text-destructive font-medium">
+                              {Math.abs(equip.status.hoursUntilDue).toFixed(1)} hours overdue
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground">
+                              {equip.status.hoursUntilDue.toFixed(1)} hours until service
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </Layout>
   );
