@@ -129,32 +129,38 @@ const EquipmentTransactionDetailsPage = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Name</span>
-                  <span className="font-medium">{equipmentTransaction.equipment.name}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Status</span>
-                  <Badge variant={equipmentTransaction.equipment.equipmentStatus === "AVAILABLE" ? "default" : "secondary"}>
-                    {equipmentTransaction.equipment.equipmentStatus}
-                  </Badge>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total Hours</span>
-                  <span className="font-medium">{equipmentTransaction.equipment.totalHoursInput}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Last Check-out</span>
-                  <span className="font-medium text-sm">
-                    {equipmentTransaction.equipment.lastCheckOutTime 
-                      ? new Date(equipmentTransaction.equipment.lastCheckOutTime).toLocaleString()
-                      : "N/A"}
-                  </span>
-                </div>
-                <div className="pt-2 border-t border-border/50">
-                  <span className="text-muted-foreground text-sm">Description</span>
-                  <p className="mt-1 text-foreground">{equipmentTransaction.equipment.description || "No description"}</p>
-                </div>
+                {equipmentTransaction.equipment ? (
+                  <>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Name</span>
+                      <span className="font-medium">{equipmentTransaction.equipment.name}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Status</span>
+                      <Badge variant={equipmentTransaction.equipment.equipmentStatus === "AVAILABLE" ? "default" : "secondary"}>
+                        {equipmentTransaction.equipment.equipmentStatus}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Total Hours</span>
+                      <span className="font-medium">{equipmentTransaction.equipment.totalHoursInput}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Last Check-out</span>
+                      <span className="font-medium text-sm">
+                        {equipmentTransaction.equipment.lastCheckOutTime 
+                          ? new Date(equipmentTransaction.equipment.lastCheckOutTime).toLocaleString()
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="pt-2 border-t border-border/50">
+                      <span className="text-muted-foreground text-sm">Description</span>
+                      <p className="mt-1 text-foreground">{equipmentTransaction.equipment.description || "No description"}</p>
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-muted-foreground text-center py-4">Equipment information not available</p>
+                )}
               </CardContent>
             </Card>
 
