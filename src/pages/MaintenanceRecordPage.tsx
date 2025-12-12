@@ -100,8 +100,14 @@ const MaintenanceRecordPage = () => {
         equipmentId: startFormData.equipmentId,
         totalHoursInput: parseFloat(startFormData.totalHoursInput),
       };
-      await ApiService.startMaintenance(body);
-      toast.success("Maintenance started");
+      const response = await ApiService.startMaintenance(body);
+      
+      if (response.status !== 200) {
+        toast.error(response.message || "Failed to start maintenance");
+        return;
+      }
+      
+      toast.success(response.message || "Maintenance started");
       setShowStartForm(false);
       setStartFormData({ equipmentId: "", totalHoursInput: "" });
       // Refresh records and equipment list
@@ -129,8 +135,14 @@ const MaintenanceRecordPage = () => {
         maintenancePerformed: endFormData.maintenancePerformed,
         note: endFormData.note,
       };
-      await ApiService.endMaintenance(body);
-      toast.success("Maintenance completed");
+      const response = await ApiService.endMaintenance(body);
+      
+      if (response.status !== 200) {
+        toast.error(response.message || "Failed to end maintenance");
+        return;
+      }
+      
+      toast.success(response.message || "Maintenance completed");
       setShowEndForm(false);
       setEndFormData({ equipmentId: "", totalHoursInput: "", maintenancePerformed: "", note: "" });
       // Refresh records and equipment list
