@@ -18,7 +18,7 @@ interface EquipmentTransaction {
   timestamp: string;
   equipment: {
     name: string;
-    totalHoursInput: number;
+    totalHours: number;
     equipmentStatus: string;
     lastCheckOutTime: string;
     description: string;
@@ -143,7 +143,7 @@ const EquipmentTransactionDetailsPage = () => {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Total Hours</span>
-                      <span className="font-medium">{equipmentTransaction.equipment.totalHoursInput}</span>
+                      <span className="font-medium">{equipmentTransaction.equipment.totalHours ?? "N/A"}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Last Check-out</span>
