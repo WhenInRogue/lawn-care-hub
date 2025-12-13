@@ -232,6 +232,15 @@
     background: hsl(var(--sidebar-accent));
   }
 
+  .nav-links li a.logout-link {
+    color: hsl(var(--destructive));
+  }
+
+  .nav-links li a.logout-link:hover {
+    color: hsl(var(--destructive));
+    background: hsl(var(--destructive) / 0.15);
+  }
+
   .nav-icon {
     width: 20px;
     height: 20px;
