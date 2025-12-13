@@ -23,14 +23,14 @@ const HelpButton = () => {
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-4xl h-[85vh] p-0 overflow-hidden">
-          <DialogHeader className="p-4 pb-0">
-            <DialogTitle>User Manual</DialogTitle>
+        <DialogContent className="max-w-5xl w-[90vw] h-[90vh] p-0 overflow-hidden flex flex-col">
+          <DialogHeader className="px-4 py-2 border-b shrink-0">
+            <DialogTitle className="text-base">User Manual</DialogTitle>
           </DialogHeader>
-          <div className="flex-1 h-full p-4 pt-2">
+          <div className="flex-1 min-h-0">
             <iframe
               src="/User_Manual.pdf"
-              className="w-full h-full rounded-md border"
+              className="w-full h-full"
               title="User Manual"
             />
           </div>
