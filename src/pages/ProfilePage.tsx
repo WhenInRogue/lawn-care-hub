@@ -2,12 +2,16 @@ import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import ApiService from "@/services/ApiService";
 import { Card, CardContent } from "@/components/ui/card";
-import { User, Mail, Phone, Shield } from "lucide-react";
+import { User, Mail, Phone, Shield, Moon, Sun } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { useTheme } from "@/hooks/use-theme";
 
 const ProfilePage = () => {
   const [user, setUser] = useState<any>(null);
   const { toast } = useToast();
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -48,6 +52,29 @@ const ProfilePage = () => {
                   </div>
                 </div>
               ))}
+              
+              {/* Dark Mode Toggle */}
+              <div className="flex items-center justify-between p-4 bg-secondary rounded-lg">
+                <div className="flex items-center gap-4">
+                  {theme === "dark" ? (
+                    <Moon className="w-5 h-5 text-primary" />
+                  ) : (
+                    <Sun className="w-5 h-5 text-primary" />
+                  )}
+                  <div>
+                    <p className="text-xs text-muted-foreground">Appearance</p>
+                    <p className="font-medium">{theme === "dark" ? "Dark Mode" : "Light Mode"}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="dark-mode" className="sr-only">Toggle dark mode</Label>
+                  <Switch
+                    id="dark-mode"
+                    checked={theme === "dark"}
+                    onCheckedChange={toggleTheme}
+                  />
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
