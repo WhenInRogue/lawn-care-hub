@@ -152,7 +152,7 @@ const DashboardPage = () => {
                         </div>
                         <Progress 
                           value={stockPercent} 
-                          className="h-2 mb-2" 
+                          className="h-2 mb-2 [&>div]:bg-destructive" 
                         />
                         <div className="flex justify-between text-xs text-muted-foreground">
                           <span>{supply.currentStock} / {supply.maximumQuantity} {supply.unitOfMeasurement}</span>
