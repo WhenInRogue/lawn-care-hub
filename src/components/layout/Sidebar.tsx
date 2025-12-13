@@ -45,7 +45,7 @@ const Sidebar = () => {
           <Leaf className="w-8 h-8" />
         </div>
         <div className="sidebar-brand">
-          <h1>LawnCare99</h1>
+          <h1>99 Lawn Care</h1>
           <span>Inventory System</span>
         </div>
       </div>

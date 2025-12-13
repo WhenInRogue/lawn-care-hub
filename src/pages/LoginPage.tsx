@@ -45,7 +45,7 @@ const LoginPage = () => {
           </div>
           <div>
             <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-            <CardDescription>Sign in to LawnCare99 Inventory System</CardDescription>
+            <CardDescription>Sign in to 99 Lawn Care's Inventory System</CardDescription>
           </div>
         </CardHeader>
         <CardContent>

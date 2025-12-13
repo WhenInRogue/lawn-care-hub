@@ -47,7 +47,7 @@ const RegisterPage = () => {
             </div>
             <div>
               <CardTitle className="text-2xl font-bold">Register New User</CardTitle>
-              <CardDescription>Create a new account for LawnCare99</CardDescription>
+              <CardDescription>Create a new account for 99 Lawn Care</CardDescription>
             </div>
           </CardHeader>
           <CardContent>
