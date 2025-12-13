@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,8 +9,28 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+const routeToPageMap: Record<string, number> = {
+  "/register": 4,
+  "/dashboard": 6,
+  "/equipment": 7,
+  "/check-out-equipment": 8,
+  "/check-out-supply": 9,
+  "/check-in-equipment": 10,
+  "/check-in-supply": 11,
+  "/supply": 12,
+  "/supply-transactions": 13,
+  "/equipment-transactions": 14,
+  "/maintenance-records": 15,
+  "/profile": 16,
+};
+
 const HelpButton = () => {
   const [open, setOpen] = useState(false);
+  const location = useLocation();
+  
+  const getPdfPage = () => {
+    return routeToPageMap[location.pathname] || 1;
+  };
 
   return (
     <>
@@ -29,7 +50,7 @@ const HelpButton = () => {
           </DialogHeader>
           <div className="flex-1 min-h-0">
             <iframe
-              src="/User_Manual.pdf"
+              src={`/User_Manual.pdf#page=${getPdfPage()}`}
               className="w-full h-full"
               title="User Manual"
             />
