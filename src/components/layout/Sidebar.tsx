@@ -68,7 +68,7 @@ const Sidebar = () => {
           
           {isAuth && (
             <li>
-              <Link onClick={logout} to="/login">
+              <Link onClick={logout} to="/login" className="text-destructive hover:text-destructive">
                 <LogOut className="nav-icon" />
                 Logout
               </Link>
