@@ -75,6 +75,11 @@ const LoginPage = () => {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Signing in..." : "Sign In"}
             </Button>
+            <div className="text-center text-sm text-muted-foreground">
+              <Link to="/register" className="text-primary hover:underline">
+                Register New User
+              </Link>
+            </div>
           </form>
         </CardContent>
       </Card>
