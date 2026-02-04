@@ -4,7 +4,9 @@ import ApiService from "@/services/ApiService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { UserPlus, Mail, Lock, User, Phone } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { UserPlus, Mail, Lock, User, Phone, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const RegisterPage = () => {
@@ -12,6 +14,7 @@ const RegisterPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [role, setRole] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -20,7 +23,7 @@ const RegisterPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await ApiService.registerUser({ name, email, password, phoneNumber });
+      await ApiService.registerUser({ name, email, password, phoneNumber, role });
       toast({ title: "Registration Successful!", description: "Your account has been created. Please sign in." });
       navigate("/login");
     } catch (error: any) {
@@ -88,7 +91,22 @@ const RegisterPage = () => {
                 required 
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <div className="space-y-2">
+              <Label htmlFor="role" className="flex items-center gap-2 text-muted-foreground">
+                <Shield className="h-4 w-4" />
+                Role
+              </Label>
+              <Select value={role} onValueChange={setRole} required>
+                <SelectTrigger id="role">
+                  <SelectValue placeholder="Select a role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="MANAGER">Manager</SelectItem>
+                  <SelectItem value="ADMIN">Admin</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button type="submit" className="w-full" disabled={loading || !role}>
               {loading ? "Creating Account..." : "Create Account"}
             </Button>
             <div className="text-center text-sm text-muted-foreground">
